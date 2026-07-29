@@ -16,10 +16,10 @@
 
 | 문서 | 주제 | 관련 마일스톤 |
 |---|---|---|
-| (예정) | Next.js App Router 구조 | M0 |
+| [web-server-client-components.md](./web-server-client-components.md) | 서버/클라이언트 컴포넌트, 하이드레이션, Route Handler | M1 |
 
 ### 주식
 
 | 문서 | 주제 | 관련 마일스톤 |
 |---|---|---|
-| (예정) | 호가와 현재가 | M1 |
+| [stock-price-basics.md](./stock-price-basics.md) | 현재가·등락률·거래량, 캔들(OHLC) 읽는 법 | M1 |
