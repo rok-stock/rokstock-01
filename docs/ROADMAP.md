@@ -7,7 +7,7 @@
 
 ---
 
-## M0. 프로젝트 기반 🟨
+## M0. 프로젝트 기반 ✅
 
 프로젝트의 뼈대와 운영 규칙을 만든다.
 
@@ -23,22 +23,31 @@
 
 ---
 
-## M1. 시세 조회 대시보드 ⬜
+## M1. 시세 조회 대시보드 ✅
 
 실제 KRX 시세(지연/일봉)를 조회하고 보여주는 화면을 만든다.
 
-- [ ] 종목 검색 (종목명/종목코드)
-- [ ] 현재가(지연 시세)와 등락률 표시
-- [ ] 일봉 차트 표시
-- [ ] 관심 종목 목록
+- [x] 종목 검색 (종목명/종목코드)
+- [x] 현재가(지연 시세)와 등락률 표시
+- [x] 일봉 차트 표시
+- [x] 관심 종목 목록 (localStorage)
+
+**구현 메모**
+- 시세는 공급자(provider) 인터페이스 뒤에 숨겼다 → `src/lib/market/`, 자세한 내용은
+  [docs/market-data.md](./market-data.md)
+- 기본은 API 키가 필요 없는 **목업 공급자**, `MARKET_DATA_PROVIDER=datagokr`로 공공데이터포털
+  실제 시세 전환
+- 관심 종목 DB 저장은 M2에서 다룬다
 
 **학습 목표**
 - 웹개발: 외부 API 연동(Route Handler), 데이터 페칭과 캐싱, 차트 라이브러리
+  → [learning/web-server-client-components.md](./learning/web-server-client-components.md)
 - 주식: 호가/현재가/등락률, 캔들(일봉)의 의미, 거래량
+  → [learning/stock-price-basics.md](./learning/stock-price-basics.md)
 
 ---
 
-## M2. 가상 계좌 & 수동 매매 ⬜
+## M2. 가상 계좌 & 수동 매매 🟨
 
 가상 잔고로 직접 매수/매도해 보는 단계. 매매의 기본 개념을 몸으로 익힌다.
 
