@@ -15,7 +15,7 @@
 - [x] 프로젝트 규칙 문서화 (AGENTS.md)
 - [x] 마일스톤 수립 (이 문서)
 - [x] 화면 버전 표기 (footer의 VersionBadge)
-- [ ] main 브랜치 정리 및 첫 PR
+- [x] main 브랜치 정리 및 첫 PR
 
 **학습 목표**
 - 웹개발: Next.js App Router 구조(layout/page), 서버 컴포넌트, SemVer 버전 관리
