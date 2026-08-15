@@ -15,7 +15,7 @@ export default function HistoryPage() {
   const empty = state.pendingOrders.length === 0 && state.trades.length === 0;
 
   return (
-    <main className="mx-auto w-full max-w-3xl flex-1 px-6 py-10">
+    <main className="container-page flex-1 px-6 py-10">
       <h1 className="text-2xl font-semibold tracking-tight">거래 내역</h1>
 
       {!ready ? (
@@ -53,7 +53,7 @@ export default function HistoryPage() {
                       {order.side === "buy" ? "매수" : "매도"}
                     </span>
                     <div className="min-w-0 flex-1">
-                      <Link href={`/stocks/${order.code}`} className="text-sm font-medium">
+                      <Link href={`/stocks/${order.code}`} className="text-sm font-medium hover:underline">
                         {order.name}
                       </Link>
                       <p className="mt-0.5 text-xs tabular-nums text-zinc-500">
@@ -98,7 +98,7 @@ export default function HistoryPage() {
                       {trade.side === "buy" ? "매수" : "매도"}
                     </span>
                     <div className="min-w-0 flex-1">
-                      <Link href={`/stocks/${trade.code}`} className="text-sm font-medium">
+                      <Link href={`/stocks/${trade.code}`} className="text-sm font-medium hover:underline">
                         {trade.name}
                       </Link>
                       <p className="mt-0.5 text-xs tabular-nums text-zinc-500">

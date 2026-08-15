@@ -25,7 +25,7 @@ export default function SettingsPage() {
   };
 
   return (
-    <main className="mx-auto w-full max-w-3xl flex-1 px-6 py-10">
+    <main className="container-page flex-1 px-6 py-10">
       <h1 className="text-2xl font-semibold tracking-tight">설정</h1>
 
       <section className="mt-8">
@@ -140,7 +140,7 @@ export default function SettingsPage() {
                 <button
                   type="button"
                   onClick={() => setConfirming(false)}
-                  className="rounded-lg border border-zinc-300 px-4 py-2 text-sm dark:border-zinc-700"
+                  className="rounded-lg border border-zinc-300 px-4 py-2 text-sm hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-800"
                 >
                   취소
                 </button>

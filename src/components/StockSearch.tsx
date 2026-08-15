@@ -72,6 +72,10 @@ export default function StockSearch() {
           setLoading(event.target.value.trim().length > 0);
         }}
         onFocus={() => setOpen(true)}
+        onKeyDown={(event) => {
+          // 데스크톱 키보드: Esc 로 결과 드롭다운 닫기
+          if (event.key === "Escape") setOpen(false);
+        }}
         placeholder="종목명 또는 종목코드 검색"
         aria-label="종목 검색"
         className="w-full rounded-full border border-zinc-200 bg-white px-4 py-2 text-sm outline-none placeholder:text-zinc-400 focus:border-zinc-400 dark:border-zinc-800 dark:bg-zinc-900 dark:focus:border-zinc-600"

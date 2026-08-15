@@ -68,8 +68,8 @@ export default async function StockDetailPage({
   const color = changeColorClass(quote.change);
 
   return (
-    // pb-28: 하단 고정 매수/매도 바(TradePanel)에 콘텐츠가 가려지지 않도록
-    <main className="mx-auto w-full max-w-3xl flex-1 px-6 pt-10 pb-28">
+    // pb-28: 하단 고정 매수/매도 바(TradePanel)에 콘텐츠가 가려지지 않도록. 데스크톱(lg)은 바가 없어 해제
+    <main className="container-page flex-1 px-6 pt-10 pb-28 lg:pb-10">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">{quote.name}</h1>
@@ -80,20 +80,33 @@ export default async function StockDetailPage({
         <WatchlistButton code={quote.code} />
       </div>
 
-      <div className="mt-6 flex flex-wrap items-baseline gap-x-4 gap-y-1">
-        <span className="text-4xl font-semibold tabular-nums">{formatPrice(quote.price)}</span>
-        <span className="text-sm text-zinc-400">원</span>
-        <span className={`text-lg tabular-nums ${color}`}>
-          {formatChange(quote.change)} ({formatChangeRate(quote.changeRate)})
-        </span>
-      </div>
+      {/*
+       * 데스크톱(lg) 2컬럼: 좌 본문(차트·표·리포트) / 우 사이드(가격·보유·주문).
+       * 소스 순서 = 모바일 표시 순서이고, 데스크톱은 order 로 좌우를 바꾼다.
+       * ⚠️ aside 에 transform/filter 류 클래스를 추가하면 안 된다 —
+       *    모바일에서 TradePanel 의 fixed 주문바가 aside 기준으로 붙어버린다.
+       */}
+      <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start lg:gap-8">
+        <aside className="lg:sticky lg:top-24 lg:order-2">
+          <div className="mt-6 flex flex-wrap items-baseline gap-x-4 gap-y-1">
+            <span className="text-4xl font-semibold tabular-nums">{formatPrice(quote.price)}</span>
+            <span className="text-sm text-zinc-400">원</span>
+            <span className={`text-lg tabular-nums ${color}`}>
+              {formatChange(quote.change)} ({formatChangeRate(quote.changeRate)})
+            </span>
+          </div>
 
-      <p className="mt-1 text-sm text-zinc-500">거래량 {formatVolume(quote.volume)}주</p>
+          <p className="mt-1 text-sm text-zinc-500">거래량 {formatVolume(quote.volume)}주</p>
 
-      {/* 개인 상태(보유)는 클라이언트에서 — 페이지 본문은 ISR 로 공유 캐시된다 */}
-      <PositionCard code={quote.code} price={quote.price} />
+          {/* 개인 상태(보유)는 클라이언트에서 — 페이지 본문은 ISR 로 공유 캐시된다 */}
+          <PositionCard code={quote.code} price={quote.price} />
 
-      <section className="mt-10">
+          {/* 모바일: 하단 fixed 바 + 바텀시트 / 데스크톱: 이 자리의 카드 + 중앙 모달 */}
+          <TradePanel code={quote.code} name={quote.name} price={quote.price} date={quote.date} />
+        </aside>
+
+        <div className="min-w-0 lg:order-1">
+          <section className="mt-10 lg:mt-6">
         <h2 className="mb-3 text-sm font-semibold text-zinc-500 dark:text-zinc-400">
           일봉 차트 (최근 {CHART_DAYS}영업일)
         </h2>
@@ -136,9 +149,9 @@ export default async function StockDetailPage({
         </div>
       </details>
 
-      <CompanyReport code={quote.code} marketCap={quote.marketCap} />
-
-      <TradePanel code={quote.code} name={quote.name} price={quote.price} date={quote.date} />
+          <CompanyReport code={quote.code} marketCap={quote.marketCap} />
+        </div>
+      </div>
     </main>
   );
 }

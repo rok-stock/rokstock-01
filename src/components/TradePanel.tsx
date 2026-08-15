@@ -2,10 +2,12 @@
 
 import ConceptTip from "@/components/ConceptTip";
 import { useGame } from "@/hooks/useGame";
+import { useEscapeClose } from "@/hooks/useEscapeClose";
 import { expectedExecDate } from "@/lib/game/engine";
 import { COMMISSION_RATE, commissionOf, sellTaxOf } from "@/lib/game/rules";
 import { formatPrice } from "@/lib/market/format";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
 /**
  * 종목 상세 하단의 매수/매도 바 + 주문 바텀시트.
@@ -60,7 +62,8 @@ export default function TradePanel({ code, name, price, date }: TradePanelProps)
     setError(null);
   };
 
-  const close = () => setMode(null);
+  const close = useCallback(() => setMode(null), []);
+  useEscapeClose(mode !== null, close);
 
   const showToast = (message: string) => {
     setToast(message);
@@ -102,9 +105,9 @@ export default function TradePanel({ code, name, price, date }: TradePanelProps)
 
   return (
     <>
-      {/* 하단 고정 매수/매도 바 — TabBar(3.5rem) 바로 위 */}
-      <div className="fixed inset-x-0 z-40 border-t border-zinc-200 bg-white/95 backdrop-blur bottom-[calc(3.5rem+env(safe-area-inset-bottom))] dark:border-zinc-800 dark:bg-zinc-950/95">
-        <div className="mx-auto flex max-w-3xl gap-2 px-4 py-3">
+      {/* 모바일: 하단 고정 매수/매도 바 — TabBar(3.5rem) 바로 위. 데스크톱(lg): 사이드바 인라인 카드 */}
+      <div className="fixed inset-x-0 z-40 border-t border-zinc-200 bg-white/95 backdrop-blur bottom-[calc(3.5rem+env(safe-area-inset-bottom))] lg:static lg:mt-6 lg:rounded-2xl lg:border lg:bg-transparent lg:backdrop-blur-none dark:border-zinc-800 dark:bg-zinc-950/95 dark:lg:bg-transparent">
+        <div className="mx-auto flex max-w-3xl gap-2 px-6 py-3 lg:px-4">
           <button
             type="button"
             onClick={() => openSheet("buy")}
@@ -123,26 +126,36 @@ export default function TradePanel({ code, name, price, date }: TradePanelProps)
         </div>
       </div>
 
-      {/* 주문 접수 토스트 */}
-      {toast && (
-        <div
-          role="status"
-          className="fixed inset-x-4 z-50 mx-auto max-w-md rounded-xl bg-zinc-900 px-4 py-3 text-center text-sm text-white shadow-lg bottom-[calc(8rem+env(safe-area-inset-bottom))] dark:bg-zinc-100 dark:text-zinc-900"
-        >
-          {toast}
-        </div>
-      )}
+      {/* 주문 접수 토스트 — 포털: 데스크톱에서 sticky 사이드바(스태킹 컨텍스트)에 갇히지 않도록 body 로 탈출 */}
+      {toast &&
+        createPortal(
+          <div
+            role="status"
+            className="fixed inset-x-4 z-50 mx-auto max-w-md rounded-xl bg-zinc-900 px-4 py-3 text-center text-sm text-white shadow-lg bottom-[calc(8rem+env(safe-area-inset-bottom))] lg:bottom-10 dark:bg-zinc-100 dark:text-zinc-900"
+          >
+            {toast}
+          </div>,
+          document.body,
+        )}
 
-      {/* 주문 바텀시트 */}
-      {mode && (
-        <div className="fixed inset-0 z-50" role="dialog" aria-modal="true" aria-label="주문">
+      {/* 주문 시트 — 모바일: 하단 바텀시트 / 데스크톱(lg): 중앙 모달.
+          포털로 body 에 렌더 — sticky 사이드바의 스태킹 컨텍스트에 갇히면 차트 캔버스가 위로 비친다.
+          ⚠️ 시트는 lg:static 이 아니라 lg:relative 여야 딤(absolute) 위에 그려진다 */}
+      {mode &&
+        createPortal(
+          <div
+            className="fixed inset-0 z-50 lg:grid lg:place-items-center lg:p-6"
+            role="dialog"
+            aria-modal="true"
+            aria-label="주문"
+          >
           <button
             type="button"
             aria-label="닫기"
             onClick={close}
             className="absolute inset-0 bg-black/40"
           />
-          <div className="absolute inset-x-0 bottom-0 mx-auto max-w-3xl rounded-t-2xl bg-white p-5 pb-[calc(1.5rem+env(safe-area-inset-bottom))] dark:bg-zinc-900">
+          <div className="absolute inset-x-0 bottom-0 mx-auto max-w-3xl rounded-t-2xl bg-white p-5 pb-[calc(1.5rem+env(safe-area-inset-bottom))] lg:relative lg:inset-auto lg:w-full lg:max-w-lg lg:rounded-2xl lg:p-6 lg:pb-6 lg:shadow-xl dark:bg-zinc-900">
             <div className="flex items-baseline justify-between">
               <h2 className="text-lg font-semibold">
                 {name}{" "}
@@ -262,8 +275,9 @@ export default function TradePanel({ code, name, price, date }: TradePanelProps)
                 : `${withComma(value) || "0"}주 매도 주문`}
             </button>
           </div>
-        </div>
-      )}
+          </div>,
+          document.body,
+        )}
     </>
   );
 }

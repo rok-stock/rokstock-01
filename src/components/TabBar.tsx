@@ -4,14 +4,15 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 /**
- * 하단 고정 탭 내비게이션 (모바일 앱 스타일).
+ * 하단 고정 탭 내비게이션 (모바일 앱 스타일). 데스크톱(lg)에서는 숨기고
+ * 헤더 내비(HeaderNav)가 역할을 이어받는다 — TABS 배열을 공유한다.
  *
  * `pb-[env(safe-area-inset-bottom)]` 는 아이폰 홈 인디케이터 영역을 피하기 위한
- * safe-area 대응이다. 레이아웃 body 에 하단 여백(pb-16)을 함께 줘서 콘텐츠가
- * 탭바에 가려지지 않게 한다.
+ * safe-area 대응이다. 레이아웃 body 에 하단 여백(pb-20, lg:pb-0)을 함께 줘서
+ * 콘텐츠가 탭바에 가려지지 않게 한다.
  */
 
-const TABS = [
+export const TABS = [
   {
     href: "/",
     label: "홈",
@@ -57,7 +58,7 @@ export default function TabBar() {
     <nav
       aria-label="주요 메뉴"
       className="fixed inset-x-0 bottom-0 z-40 border-t border-zinc-200 bg-white/95 backdrop-blur
-                 pb-[env(safe-area-inset-bottom)] dark:border-zinc-800 dark:bg-zinc-950/95"
+                 pb-[env(safe-area-inset-bottom)] lg:hidden dark:border-zinc-800 dark:bg-zinc-950/95"
     >
       <div className="mx-auto flex max-w-3xl">
         {TABS.map((tab) => {

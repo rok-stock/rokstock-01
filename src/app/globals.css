@@ -22,5 +22,29 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+}
+
+/*
+ * 페이지/헤더 공용 컨테이너 — 모바일 3xl(768px), 데스크톱(lg)은 5xl(1024px).
+ * 데스크톱 콘텐츠 폭을 바꾸고 싶으면 여기 한 줄만 고치면 된다.
+ */
+@utility container-page {
+  margin-inline: auto;
+  width: 100%;
+  max-width: var(--container-3xl);
+  @media (width >= 64rem) {
+    max-width: var(--container-5xl);
+  }
+}
+
+/*
+ * 키보드 포커스 링 — 데스크톱 Tab 내비게이션용.
+ * base 레이어라서 utilities(outline-none 등)가 필요한 곳에서는 이길 수 있다.
+ */
+@layer base {
+  :focus-visible {
+    outline: 2px solid var(--color-zinc-500);
+    outline-offset: 2px;
+  }
 }

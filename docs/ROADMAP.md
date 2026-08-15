@@ -188,6 +188,25 @@ localStorage 기반 게임 상태와 앱 골격(하단 탭)을 만든다.
 
 ---
 
+## G8. 데스크톱 대응 ✅
+
+모바일 우선으로 만든 게임을 PC 화면에도 최적화한다. 전환점은 lg(1024px) 하나로 통일.
+
+- [x] 공용 컨테이너 `container-page` (모바일 768px → 데스크톱 1024px, Tailwind v4 @utility)
+- [x] 데스크톱 내비: 헤더에 홈/내역/설정 (TabBar 와 TABS 공유) + sticky 헤더, 탭바는 lg 에서 숨김
+- [x] 홈·종목 상세 2컬럼 (상세는 우측 sticky 사이드바에 가격·보유·주문 카드)
+- [x] 바텀시트 3종(주문/개봉/용어) → 데스크톱 중앙 모달
+- [x] 차트 높이 확대 (450px → lg 560px)
+- [x] 키보드: 전역 :focus-visible 링, 모달 Esc 닫기(useEscapeClose), 검색 Esc / hover 누락 보강
+- [ ] 검색 드롭다운 방향키/Enter 콤보박스 (후속)
+
+**학습 목표**
+- 웹개발: 모바일 퍼스트 반응형, fixed 의 DOM 위치 독립성, grid order, :focus-visible
+  → [learning/web-responsive-desktop.md](./learning/web-responsive-desktop.md)
+- 주식: (없음 — UI 단계)
+
+---
+
 ## 장기 아이디어 (구 M2~M6)
 
 게임이 완성된 뒤에 검토할 원래 로드맵의 아이디어들. 게임의 데이터 파이프라인과 도메인 로직
