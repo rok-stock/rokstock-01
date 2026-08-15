@@ -1,4 +1,5 @@
 import CandleChart from "@/components/CandleChart";
+import PositionCard from "@/components/PositionCard";
 import TradePanel from "@/components/TradePanel";
 import WatchlistButton from "@/components/WatchlistButton";
 import { marketProvider } from "@/lib/market";
@@ -87,6 +88,9 @@ export default async function StockDetailPage({
       </div>
 
       <p className="mt-1 text-sm text-zinc-500">거래량 {formatVolume(quote.volume)}주</p>
+
+      {/* 개인 상태(보유)는 클라이언트에서 — 페이지 본문은 ISR 로 공유 캐시된다 */}
+      <PositionCard code={quote.code} price={quote.price} />
 
       <section className="mt-10">
         <h2 className="mb-3 text-sm font-semibold text-zinc-500 dark:text-zinc-400">

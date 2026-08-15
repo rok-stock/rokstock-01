@@ -1,5 +1,5 @@
-import AccountCard from "@/components/AccountCard";
 import OnboardingCard from "@/components/OnboardingCard";
+import PortfolioPanel from "@/components/PortfolioPanel";
 import WatchlistPanel from "@/components/WatchlistPanel";
 import { marketProvider } from "@/lib/market";
 import Link from "next/link";
@@ -28,7 +28,7 @@ export default function Home() {
       <OnboardingCard />
 
       <div className="mt-6">
-        <AccountCard />
+        <PortfolioPanel />
       </div>
 
       {/* WatchlistPanel 이 자체 "관심 종목" 제목을 갖고 있다 */}
