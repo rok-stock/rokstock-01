@@ -19,9 +19,12 @@
 | [web-server-client-components.md](./web-server-client-components.md) | 서버/클라이언트 컴포넌트, 하이드레이션, Route Handler | M1 |
 | [web-isr-caching.md](./web-isr-caching.md) | ISR, 데이터 캐시와 태그, 온디맨드 재검증, generateStaticParams 함정 | G1 |
 | [web-localstorage-state.md](./web-localstorage-state.md) | localStorage 단일 키 원자성, 스키마 버전, useSyncExternalStore 패턴 | G2 |
+| [web-mobile-bottom-sheet.md](./web-mobile-bottom-sheet.md) | 바텀시트, safe-area, 모바일 숫자 입력 | G3 |
 
 ### 주식
 
 | 문서 | 주제 | 관련 마일스톤 |
 |---|---|---|
 | [stock-price-basics.md](./stock-price-basics.md) | 현재가·등락률·거래량, 캔들(OHLC) 읽는 법 | M1 |
+| [stock-order-execution.md](./stock-order-execution.md) | 주문 vs 체결, 시장가/지정가, 룩어헤드 편향 | G3 |
+| [stock-fees-and-taxes.md](./stock-fees-and-taxes.md) | 위탁수수료, 증권거래세·농특세 인하 연혁, 거래 비용 체감 | G3 |
