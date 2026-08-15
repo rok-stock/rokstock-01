@@ -33,6 +33,7 @@ interface RawPriceItem {
   vs: string;
   fltRt: string;
   trqu: string;
+  mrktTotAmt: string;
 }
 
 function toNumber(value: string | undefined): number {
@@ -122,6 +123,7 @@ export const getMarketSnapshot = cache(async (): Promise<MarketSnapshot> => {
         change: toNumber(item.vs),
         changeRate: toNumber(item.fltRt),
         volume: toNumber(item.trqu),
+        marketCap: toNumber(item.mrktTotAmt),
         date,
       });
     }

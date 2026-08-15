@@ -61,6 +61,7 @@ function toQuote(day: SeedDay, col: Record<string, number>, row: Row): Quote | n
     change: Number(row[col.vs]),
     changeRate: Number(row[col.fltRt]),
     volume: Number(row[col.trqu]),
+    marketCap: Number(row[col.mrktTotAmt]),
     date: day.date,
   };
 }

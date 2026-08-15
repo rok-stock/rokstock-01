@@ -27,6 +27,8 @@ export interface Quote extends Stock {
   changeRate: number;
   /** 거래량 (주) */
   volume: number;
+  /** 시가총액 (원). 데이터가 없는 공급자(목업 등)에서는 생략 — PER/PBR 계산용 */
+  marketCap?: number;
   /** 이 시세의 기준일자 (YYYY-MM-DD) */
   date: string;
 }

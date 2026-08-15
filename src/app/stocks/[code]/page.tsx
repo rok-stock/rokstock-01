@@ -1,4 +1,5 @@
 import CandleChart from "@/components/CandleChart";
+import CompanyReport from "@/components/CompanyReport";
 import PositionCard from "@/components/PositionCard";
 import TradePanel from "@/components/TradePanel";
 import WatchlistButton from "@/components/WatchlistButton";
@@ -134,6 +135,8 @@ export default async function StockDetailPage({
           </table>
         </div>
       </details>
+
+      <CompanyReport code={quote.code} marketCap={quote.marketCap} />
 
       <TradePanel code={quote.code} name={quote.name} price={quote.price} date={quote.date} />
     </main>
