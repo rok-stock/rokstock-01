@@ -22,6 +22,7 @@
 | [web-mobile-bottom-sheet.md](./web-mobile-bottom-sheet.md) | 바텀시트, safe-area, 모바일 숫자 입력 | G3 |
 | [web-responsive-desktop.md](./web-responsive-desktop.md) | 모바일 퍼스트 반응형, v4 @utility, fixed 의 DOM 독립성, :focus-visible | G8 |
 | [web-aria-combobox.md](./web-aria-combobox.md) | ARIA 콤보박스 패턴, aria-activedescendant 가상 포커스 | G8 |
+| [web-share-og-pwa.md](./web-share-og-pwa.md) | Web Share API·클립보드 폴백, OG 이미지(한글 서브셋), PWA maskable 아이콘 | G9 |
 
 ### 주식
 
