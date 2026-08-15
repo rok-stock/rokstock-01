@@ -1,5 +1,6 @@
 "use client";
 
+import ConceptTip from "@/components/ConceptTip";
 import { useGame } from "@/hooks/useGame";
 import { expectedExecDate } from "@/lib/game/engine";
 import { COMMISSION_RATE, commissionOf, sellTaxOf } from "@/lib/game/rules";
@@ -209,7 +210,9 @@ export default function TradePanel({ code, name, price, date }: TradePanelProps)
                     <dd className="tabular-nums">{estimatedQty}주</dd>
                   </div>
                   <div className="flex justify-between">
-                    <dt className="text-zinc-500">수수료 (0.015%)</dt>
+                    <dt className="text-zinc-500">
+                      <ConceptTip id="fees">수수료</ConceptTip> (0.015%)
+                    </dt>
                     <dd className="text-zinc-500">주문 금액에 포함</dd>
                   </div>
                 </>
@@ -220,11 +223,15 @@ export default function TradePanel({ code, name, price, date }: TradePanelProps)
                     <dd className="tabular-nums">{formatPrice(sellGross)}원</dd>
                   </div>
                   <div className="flex justify-between">
-                    <dt className="text-zinc-500">수수료 + 세금 (0.015% + 0.15%)</dt>
+                    <dt className="text-zinc-500">
+                      <ConceptTip id="fees">수수료 + 세금</ConceptTip> (0.015% + 0.15%)
+                    </dt>
                     <dd className="tabular-nums">-{formatPrice(sellFee + sellTax)}원</dd>
                   </div>
                   <div className="flex justify-between">
-                    <dt className="text-zinc-500">예상 실현손익</dt>
+                    <dt className="text-zinc-500">
+                      예상 <ConceptTip id="realizedPnl">실현손익</ConceptTip>
+                    </dt>
                     <dd className={`tabular-nums ${sellPnl >= 0 ? "text-red-600" : "text-blue-600"}`}>
                       {sellPnl >= 0 ? "+" : ""}
                       {formatPrice(sellPnl)}원

@@ -1,6 +1,7 @@
 "use client";
 
 import { useGame } from "@/hooks/useGame";
+import { ACHIEVEMENTS } from "@/lib/game/achievements";
 import { formatPrice } from "@/lib/market/format";
 import { useState } from "react";
 
@@ -49,6 +50,34 @@ export default function SettingsPage() {
             <p className="text-zinc-400">불러오는 중…</p>
           )}
         </dl>
+      </section>
+
+      <section className="mt-8">
+        <h2 className="text-sm font-semibold text-zinc-500 dark:text-zinc-400">
+          업적 {ready && `(${state.achievements.length}/${ACHIEVEMENTS.length})`}
+        </h2>
+        <ul className="mt-3 space-y-2">
+          {ACHIEVEMENTS.map((achievement) => {
+            const earned = ready && state.achievements.includes(achievement.id);
+            return (
+              <li
+                key={achievement.id}
+                className={`rounded-xl border p-4 ${
+                  earned
+                    ? "border-violet-200 bg-violet-50 dark:border-violet-900 dark:bg-violet-950"
+                    : "border-zinc-200 opacity-60 dark:border-zinc-800"
+                }`}
+              >
+                <p className="text-sm font-medium">
+                  {earned ? achievement.emoji : "🔒"} {achievement.title}
+                </p>
+                <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">
+                  {achievement.description}
+                </p>
+              </li>
+            );
+          })}
+        </ul>
       </section>
 
       <section className="mt-8">

@@ -8,7 +8,12 @@ import { INITIAL_CASH } from "./rules";
  * 정합성이 깨진다. 자세한 설계는 docs/game-design.md 4절.
  */
 
-export const GAME_SCHEMA_VERSION = 1;
+/**
+ * 스키마 버전 연혁:
+ * - v1: 최초 (계좌/포지션/주문/내역)
+ * - v2: `achievements` 필드 추가 (업적 시스템, G7) — store.ts 의 migrate 가 v1 을 승격한다
+ */
+export const GAME_SCHEMA_VERSION = 2;
 
 export type OrderSide = "buy" | "sell";
 
@@ -79,6 +84,8 @@ export interface GameState {
   trades: Trade[];
   /** 누적 실현손익 — 내역 절삭에도 보존되는 합계 */
   realizedPnlTotal: number;
+  /** 달성한 업적 id 목록 (달성 순서) — v2 에서 추가 */
+  achievements: string[];
 }
 
 /** 새 게임 상태 */
@@ -92,5 +99,6 @@ export function createInitialState(now: Date): GameState {
     pendingOrders: [],
     trades: [],
     realizedPnlTotal: 0,
+    achievements: [],
   };
 }

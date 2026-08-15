@@ -30,3 +30,4 @@
 | [stock-fees-and-taxes.md](./stock-fees-and-taxes.md) | 위탁수수료, 증권거래세·농특세 인하 연혁, 거래 비용 체감 | G3 |
 | [stock-avg-price-pnl.md](./stock-avg-price-pnl.md) | 평단가 계산, 평가손익 vs 실현손익 | G4 |
 | [stock-portfolio-valuation.md](./stock-portfolio-valuation.md) | 총자산 계산, 수익률의 기준(분모), 원본·파생 분리 | G5 |
+| [stock-benchmark-index.md](./stock-benchmark-index.md) | 지수·벤치마크, 인덱스 투자, "시장 이기기"의 어려움 | G7 |

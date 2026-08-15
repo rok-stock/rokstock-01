@@ -1,5 +1,6 @@
 "use client";
 
+import ConceptTip from "@/components/ConceptTip";
 import { useGame } from "@/hooks/useGame";
 import { changeColorClass, formatChangeRate, formatPrice } from "@/lib/market/format";
 
@@ -41,7 +42,9 @@ export default function PositionCard({ code, price }: { code: string; price: num
           </dd>
         </div>
         <div>
-          <dt className="text-xs text-zinc-400">평균 단가</dt>
+          <dt className="text-xs text-zinc-400">
+            <ConceptTip id="avgPrice">평균 단가</ConceptTip>
+          </dt>
           <dd className="mt-0.5 tabular-nums">{formatPrice(Math.round(position.avgPrice))}원</dd>
         </div>
         <div>

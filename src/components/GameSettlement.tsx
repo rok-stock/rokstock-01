@@ -1,6 +1,7 @@
 "use client";
 
 import { useGame } from "@/hooks/useGame";
+import type { AchievementDef } from "@/lib/game/achievements";
 import type { PendingOrder, Trade } from "@/lib/game/types";
 import { getGameSnapshot } from "@/lib/game/store";
 import { formatPrice } from "@/lib/market/format";
@@ -21,16 +22,18 @@ import { useCallback, useEffect, useRef, useState } from "react";
 interface Outcome {
   fills: Trade[];
   refunds: PendingOrder[];
+  earned: AchievementDef[];
 }
 
 /** 연속 focus 이벤트로 API 를 두드리지 않기 위한 최소 재시도 간격 */
 const MIN_RUN_INTERVAL_MS = 60_000;
 
 export default function GameSettlement() {
-  const { ready, settlePendingOrders } = useGame();
+  const { ready, settlePendingOrders, refreshAchievements } = useGame();
   const [outcome, setOutcome] = useState<Outcome | null>(null);
   const runningRef = useRef(false);
   const lastRunRef = useRef(0);
+  const checkedTimeRef = useRef(false);
 
   const attempt = useCallback(async () => {
     if (runningRef.current) return;
@@ -63,7 +66,7 @@ export default function GameSettlement() {
       if (candlesByCode.size === 0) return;
 
       const result = settlePendingOrders(candlesByCode);
-      if (result.fills.length > 0 || result.refunds.length > 0) {
+      if (result.fills.length > 0 || result.refunds.length > 0 || result.earned.length > 0) {
         setOutcome(result);
       }
     } finally {
@@ -73,6 +76,17 @@ export default function GameSettlement() {
 
   useEffect(() => {
     if (!ready) return;
+    // 시간 경과형 업적(한 달 생존 등)은 정산과 무관하게 로드 시 한 번 점검.
+    // setTimeout 으로 미뤄 effect 내 동기 setState(연쇄 렌더 유발)를 피한다.
+    if (!checkedTimeRef.current) {
+      checkedTimeRef.current = true;
+      setTimeout(() => {
+        const earned = refreshAchievements();
+        if (earned.length > 0) {
+          setOutcome((prev) => prev ?? { fills: [], refunds: [], earned });
+        }
+      }, 0);
+    }
     void attempt();
     const onVisible = () => {
       if (document.visibilityState === "visible") void attempt();
@@ -83,7 +97,7 @@ export default function GameSettlement() {
       window.removeEventListener("focus", onVisible);
       document.removeEventListener("visibilitychange", onVisible);
     };
-  }, [ready, attempt]);
+  }, [ready, attempt, refreshAchievements]);
 
   if (!outcome) return null;
 
@@ -91,8 +105,14 @@ export default function GameSettlement() {
     <div className="fixed inset-0 z-50" role="dialog" aria-modal="true" aria-label="체결 결과">
       <div className="absolute inset-0 bg-black/50" />
       <div className="absolute inset-x-0 bottom-0 mx-auto max-w-3xl rounded-t-2xl bg-white p-5 pb-[calc(1.5rem+env(safe-area-inset-bottom))] dark:bg-zinc-900">
-        <h2 className="text-lg font-bold">📬 체결 결과가 도착했어요</h2>
-        <p className="mt-1 text-sm text-zinc-500">주문하신 내역이 종가로 체결됐습니다.</p>
+        {outcome.fills.length > 0 || outcome.refunds.length > 0 ? (
+          <>
+            <h2 className="text-lg font-bold">📬 체결 결과가 도착했어요</h2>
+            <p className="mt-1 text-sm text-zinc-500">주문하신 내역이 종가로 체결됐습니다.</p>
+          </>
+        ) : (
+          <h2 className="text-lg font-bold">🏅 업적 달성!</h2>
+        )}
 
         <ul className="mt-4 max-h-72 space-y-2 overflow-y-auto">
           {outcome.fills.map((fill) => (
@@ -138,6 +158,22 @@ export default function GameSettlement() {
             </li>
           ))}
         </ul>
+
+        {outcome.earned.length > 0 && (
+          <div className="mt-3 space-y-2">
+            {outcome.earned.map((achievement) => (
+              <p
+                key={achievement.id}
+                className="rounded-xl bg-violet-50 px-4 py-3 text-sm text-violet-900 dark:bg-violet-950 dark:text-violet-200"
+              >
+                <span className="font-semibold">
+                  🏅 업적 달성 — {achievement.emoji} {achievement.title}
+                </span>
+                <span className="mt-0.5 block text-xs opacity-80">{achievement.description}</span>
+              </p>
+            ))}
+          </div>
+        )}
 
         <button
           type="button"

@@ -1,0 +1,67 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e3]:
+      - link "RokStock" [ref=e4] [cursor=pointer]:
+        - /url: /
+      - searchbox "종목 검색" [ref=e6]
+  - main [ref=e7]:
+    - heading "설정" [level=1] [ref=e8]
+    - generic [ref=e9]:
+      - heading "게임 정보" [level=2] [ref=e10]
+      - generic [ref=e11]:
+        - generic [ref=e12]:
+          - term [ref=e13]: 시작일
+          - definition [ref=e14]: 2026-08-10
+        - generic [ref=e15]:
+          - term [ref=e16]: 체결된 거래
+          - definition [ref=e17]: 0회
+        - generic [ref=e18]:
+          - term [ref=e19]: 누적 실현손익
+          - definition [ref=e20]: 172,619원
+    - generic [ref=e21]:
+      - heading "업적 (0/6)" [level=2] [ref=e22]
+      - list [ref=e23]:
+        - listitem [ref=e24]:
+          - paragraph [ref=e25]: 🔒 첫 매수
+          - paragraph [ref=e26]: 첫 주식이 체결됐어요. 주주가 되신 걸 환영합니다!
+        - listitem [ref=e27]:
+          - paragraph [ref=e28]: 🔒 첫 매도
+          - paragraph [ref=e29]: 첫 매도 체결 — 실현손익이라는 걸 처음 만났어요.
+        - listitem [ref=e30]:
+          - paragraph [ref=e31]: 🔒 첫 수익 실현
+          - paragraph [ref=e32]: 수수료와 세금을 내고도 남는 장사를 했어요.
+        - listitem [ref=e33]:
+          - paragraph [ref=e34]: 🔒 계란은 나눠 담기
+          - paragraph [ref=e35]: 서로 다른 5개 종목을 동시에 보유했어요 — 분산투자의 시작.
+        - listitem [ref=e36]:
+          - paragraph [ref=e37]: 🔒 한 달 생존
+          - paragraph [ref=e38]: 게임 시작 후 30일이 지났어요. 시장에 오래 머무는 것도 실력입니다.
+        - listitem [ref=e39]:
+          - paragraph [ref=e40]: 🔒 수수료로 치킨 한 마리
+          - paragraph [ref=e41]: 수수료·세금 누적 2만 원 — 거래가 잦으면 증권사(와 나라)만 배부릅니다.
+    - generic [ref=e42]:
+      - heading "데이터 안내" [level=2] [ref=e43]
+      - paragraph [ref=e44]:
+        - text: 시세는 공공데이터포털의
+        - strong [ref=e45]: 일별 데이터(T+1)
+        - text: 로, 다음 영업일 오후 1시경 갱신됩니다. 화면의 가격은 항상 가장 최근 영업일의
+        - strong [ref=e46]: 종가
+        - text: 이며, 주문도
+        - strong [ref=e47]: 다음 거래일 종가
+        - text: 로 체결됩니다 — 그래서 이 게임의 이름이 “하루 늦은 모의주식”입니다.
+    - generic [ref=e48]:
+      - heading "게임 초기화" [level=2] [ref=e49]
+      - generic [ref=e50]:
+        - paragraph [ref=e51]: 계좌·보유 종목·주문·거래 내역을 모두 지우고 초기 자금 1억 원으로 새 게임을 시작합니다.
+        - button "게임 초기화…" [ref=e52]
+  - contentinfo [ref=e53]:
+    - generic [ref=e54]: v0.9.0
+  - navigation "주요 메뉴" [ref=e55]:
+    - generic [ref=e56]:
+      - link "홈" [ref=e57] [cursor=pointer]:
+        - /url: /
+      - link "내역" [ref=e60] [cursor=pointer]:
+        - /url: /history
+      - link "설정" [ref=e63] [cursor=pointer]:
+        - /url: /settings
+  - alert [ref=e66]

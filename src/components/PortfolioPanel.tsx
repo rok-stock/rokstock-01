@@ -1,9 +1,11 @@
 "use client";
 
+import ConceptTip from "@/components/ConceptTip";
 import { useGame } from "@/hooks/useGame";
+import { INITIAL_CASH } from "@/lib/game/rules";
 import { evaluatePortfolio } from "@/lib/game/valuation";
 import { changeColorClass, formatChangeRate, formatPrice } from "@/lib/market/format";
-import type { Quote } from "@/lib/market/types";
+import type { IndexPoint, Quote } from "@/lib/market/types";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
@@ -26,7 +28,25 @@ function dayCount(startedAt: string): number {
 export default function PortfolioPanel() {
   const { state, ready } = useGame();
   const [quotes, setQuotes] = useState<ReadonlyMap<string, Quote>>(new Map());
+  const [indexPoints, setIndexPoints] = useState<IndexPoint[]>([]);
   const lastFetchRef = useRef(0);
+
+  // KOSPI 지수 (벤치마크 비교용) — 세션당 한 번이면 충분
+  useEffect(() => {
+    if (!ready) return;
+    let cancelled = false;
+    fetch("/api/index")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((json: { points?: IndexPoint[] } | null) => {
+        if (!cancelled && Array.isArray(json?.points)) setIndexPoints(json.points);
+      })
+      .catch(() => {
+        // 벤치마크 카드만 숨겨진다 — 조용히 넘어감
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [ready]);
 
   const codesKey = state.positions
     .map((p) => p.code)
@@ -72,6 +92,22 @@ export default function PortfolioPanel() {
   const valuation = evaluatePortfolio(state, quotes);
   const pnlColor = changeColorClass(valuation.totalPnl);
 
+  // 벤치마크: 게임 시작일(또는 그 직전 거래일)의 지수 대비 최근 지수 배율로
+  // "같은 날 KOSPI 에 1억을 넣었다면"을 계산한다
+  const startDate = state.startedAt.slice(0, 10);
+  const baseline =
+    [...indexPoints].reverse().find((p) => p.date <= startDate) ?? indexPoints[0];
+  const latest = indexPoints[indexPoints.length - 1];
+  const benchmark =
+    baseline && latest && baseline.close > 0
+      ? {
+          assets: Math.round((INITIAL_CASH * latest.close) / baseline.close),
+          baseline,
+          latest,
+        }
+      : null;
+  const benchmarkGap = benchmark ? valuation.totalAssets - benchmark.assets : 0;
+
   return (
     <div className="space-y-4">
       {/* 총자산 카드 */}
@@ -111,6 +147,30 @@ export default function PortfolioPanel() {
           )}
         </dl>
       </div>
+
+      {/* 벤치마크 비교 */}
+      {benchmark && (
+        <div className="rounded-2xl border border-zinc-200 p-5 dark:border-zinc-800">
+          <h2 className="text-sm font-semibold text-zinc-500 dark:text-zinc-400">
+            🏁 <ConceptTip id="benchmark">벤치마크</ConceptTip> 비교
+          </h2>
+          <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
+            시작일에 1억을 전부 <strong>KOSPI 지수</strong>에 넣었다면 지금{" "}
+            <span className="font-semibold tabular-nums">{formatPrice(benchmark.assets)}원</span>
+          </p>
+          <p className={`mt-1 text-sm tabular-nums ${changeColorClass(benchmarkGap)}`}>
+            {benchmarkGap >= 0 ? (
+              <>내가 {formatPrice(benchmarkGap)}원 앞서고 있어요 🎉</>
+            ) : (
+              <>지수가 {formatPrice(-benchmarkGap)}원 앞서 있어요 — 시장을 이기긴 어렵죠 💪</>
+            )}
+          </p>
+          <p className="mt-2 text-xs tabular-nums text-zinc-400">
+            {benchmark.baseline.date} 지수 {benchmark.baseline.close.toLocaleString("ko-KR")} →{" "}
+            {benchmark.latest.date} {benchmark.latest.close.toLocaleString("ko-KR")}
+          </p>
+        </div>
+      )}
 
       {/* 미체결 배너 */}
       {state.pendingOrders.length > 0 && (
