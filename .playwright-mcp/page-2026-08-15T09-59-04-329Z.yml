@@ -1,0 +1,54 @@
+- generic [active] [ref=f2e1]:
+  - banner [ref=f2e2]:
+    - generic [ref=f2e3]:
+      - link "RokStock" [ref=f2e4] [cursor=pointer]:
+        - /url: /
+      - searchbox "종목 검색" [ref=f2e6]
+  - main [ref=f2e7]:
+    - generic [ref=f2e8]:
+      - generic [ref=f2e9]:
+        - heading "SK하이닉스" [level=1] [ref=f2e10]
+        - paragraph [ref=f2e11]: 000660 · KOSPI · 기준일 2026-08-13
+      - button "관심 종목 담기" [disabled] [ref=f2e12]
+    - generic [ref=f2e13]:
+      - generic [ref=f2e14]: 1,593,000
+      - generic [ref=f2e15]: 원
+      - generic [ref=f2e16]: +89,000 (+5.92%)
+    - paragraph [ref=f2e17]: 거래량 468만주
+    - generic [ref=f2e18]:
+      - heading "일봉 차트 (최근 60영업일)" [level=2] [ref=f2e19]
+      - generic [ref=f2e21]:
+        - generic [ref=f2e22]:
+          - term [ref=f2e23]: 일자
+          - definition [ref=f2e24]: 2026-08-13
+        - generic [ref=f2e25]:
+          - term [ref=f2e26]: 시가
+          - definition [ref=f2e27]: 1,582,000
+        - generic [ref=f2e28]:
+          - term [ref=f2e29]: 고가
+          - definition [ref=f2e30]: 1,634,000
+        - generic [ref=f2e31]:
+          - term [ref=f2e32]: 저가
+          - definition [ref=f2e33]: 1,567,000
+        - generic [ref=f2e34]:
+          - term [ref=f2e35]: 종가
+          - definition [ref=f2e36]: 1,593,000
+        - generic [ref=f2e37]:
+          - term [ref=f2e38]: 거래량
+          - definition [ref=f2e39]: 468만
+    - group [ref=f2e41]:
+      - generic "일별 시세 표로 보기" [ref=f2e42] [cursor=pointer]
+    - generic [ref=f2e44]:
+      - button "매수" [ref=f2e45]
+      - button "매도" [disabled] [ref=f2e46]
+  - contentinfo [ref=f2e47]:
+    - generic [ref=f2e48]: v0.8.0
+  - navigation "주요 메뉴" [ref=f2e49]:
+    - generic [ref=f2e50]:
+      - link "홈" [ref=f2e51] [cursor=pointer]:
+        - /url: /
+      - link "내역" [ref=f2e54] [cursor=pointer]:
+        - /url: /history
+      - link "설정" [ref=f2e57] [cursor=pointer]:
+        - /url: /settings
+  - alert [ref=f2e60]
