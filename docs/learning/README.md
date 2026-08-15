@@ -34,3 +34,4 @@
 | [stock-portfolio-valuation.md](./stock-portfolio-valuation.md) | 총자산 계산, 수익률의 기준(분모), 원본·파생 분리 | G5 |
 | [stock-benchmark-index.md](./stock-benchmark-index.md) | 지수·벤치마크, 인덱스 투자, "시장 이기기"의 어려움 | G7 |
 | [stock-financials-per-pbr.md](./stock-financials-per-pbr.md) | 요약 재무제표 읽기, PER/PBR, 가치평가의 한계 | G6 |
+| [stock-dividends.md](./stock-dividends.md) | 배당·배당수익률·배당락, 고배당 함정, 우선주 | G6 |

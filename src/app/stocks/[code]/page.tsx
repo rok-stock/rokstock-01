@@ -149,7 +149,7 @@ export default async function StockDetailPage({
         </div>
       </details>
 
-          <CompanyReport code={quote.code} marketCap={quote.marketCap} />
+          <CompanyReport code={quote.code} marketCap={quote.marketCap} price={quote.price} />
         </div>
       </div>
     </main>

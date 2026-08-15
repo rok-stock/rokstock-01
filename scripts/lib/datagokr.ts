@@ -6,7 +6,11 @@
  * `node scripts/build-seed.ts` 로 단독 실행되어야 하기 때문이다.
  */
 
-const BASE = "https://apis.data.go.kr/1160100/service";
+/**
+ * 주의: 서비스마다 경로 규칙이 다르다 — 대부분 `service/...` 아래에 있지만
+ * 배당정보 V2 처럼 `1160100/` 바로 아래에 있는 것도 있다. 호출부가 전체 경로를 넘긴다.
+ */
+const BASE = "https://apis.data.go.kr/1160100";
 
 export function requireServiceKey(): string {
   const key = process.env.DATA_GO_KR_SERVICE_KEY;

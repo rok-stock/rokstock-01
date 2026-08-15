@@ -17,9 +17,12 @@ function formatDate8(raw: string): string {
 export default function CompanyReport({
   code,
   marketCap,
+  price,
 }: {
   code: string;
   marketCap?: number;
+  /** 최근 종가 — 배당수익률 계산용 */
+  price?: number;
 }) {
   const report = getCompanyReport(code);
 
@@ -35,11 +38,16 @@ export default function CompanyReport({
   }
 
   const latest = report.years[0];
-  // 우선주(코드 끝자리 ≠ 0)는 시총이 우선주만의 것이라 전사 이익·자본과 비교하면
-  // PER/PBR 이 심하게 왜곡된다 — 보통주에서만 지표를 계산한다.
-  const cap = code.endsWith("0") ? marketCap : undefined;
+  // 우선주(코드 끝자리 ≠ 0)는 시총·배당이 보통주와 달라 지표가 왜곡된다 — 보통주에서만 계산.
+  const isCommon = code.endsWith("0");
+  const cap = isCommon ? marketCap : undefined;
   const per = cap && latest && latest.crtmNpf > 0 ? cap / latest.crtmNpf : null;
   const pbr = cap && latest && latest.tcpt > 0 ? cap / latest.tcpt : null;
+  const dividend = report.dividend;
+  const dividendYield =
+    isCommon && dividend && dividend.annualDvdn > 0 && price
+      ? (dividend.annualDvdn / price) * 100
+      : null;
   const outline = report.outline;
 
   return (
@@ -47,8 +55,8 @@ export default function CompanyReport({
       <h2 className="mb-3 text-sm font-semibold text-zinc-500 dark:text-zinc-400">기업 리포트</h2>
 
       {/* 가치평가 지표 */}
-      {(per !== null || pbr !== null) && (
-        <div className="mb-3 grid grid-cols-2 gap-2">
+      {(per !== null || pbr !== null || dividendYield !== null) && (
+        <div className="mb-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
           <div className="rounded-2xl border border-zinc-200 p-4 dark:border-zinc-800">
             <p className="text-xs text-zinc-400">
               <ConceptTip id="per">PER</ConceptTip>
@@ -56,7 +64,7 @@ export default function CompanyReport({
             <p className="mt-1 text-xl font-semibold tabular-nums">
               {per !== null ? `${per.toFixed(1)}배` : "적자"}
             </p>
-            <p className="mt-0.5 text-xs text-zinc-400">{latest.bizYear}년 순이익 기준</p>
+            <p className="mt-0.5 text-xs text-zinc-400">{latest?.bizYear}년 순이익 기준</p>
           </div>
           <div className="rounded-2xl border border-zinc-200 p-4 dark:border-zinc-800">
             <p className="text-xs text-zinc-400">
@@ -65,7 +73,29 @@ export default function CompanyReport({
             <p className="mt-1 text-xl font-semibold tabular-nums">
               {pbr !== null ? `${pbr.toFixed(2)}배` : "—"}
             </p>
-            <p className="mt-0.5 text-xs text-zinc-400">{latest.bizYear}년 자본총계 기준</p>
+            <p className="mt-0.5 text-xs text-zinc-400">{latest?.bizYear}년 자본총계 기준</p>
+          </div>
+          <div className="rounded-2xl border border-zinc-200 p-4 dark:border-zinc-800">
+            <p className="text-xs text-zinc-400">
+              <ConceptTip id="dividendYield">배당수익률</ConceptTip>
+            </p>
+            <p className="mt-1 text-xl font-semibold tabular-nums">
+              {dividendYield !== null ? `${dividendYield.toFixed(2)}%` : "—"}
+            </p>
+            <p className="mt-0.5 text-xs text-zinc-400">
+              {dividendYield !== null && dividend
+                ? `주당 ${formatPrice(dividend.annualDvdn)}원 (최근 1년)`
+                : "최근 1년 현금배당 없음"}
+            </p>
+          </div>
+          <div className="rounded-2xl border border-zinc-200 p-4 dark:border-zinc-800">
+            <p className="text-xs text-zinc-400">
+              <ConceptTip id="parValue">액면가</ConceptTip>
+            </p>
+            <p className="mt-1 text-xl font-semibold tabular-nums">
+              {dividend && dividend.parValue > 0 ? `${formatPrice(dividend.parValue)}원` : "—"}
+            </p>
+            <p className="mt-0.5 text-xs text-zinc-400">주가와는 무관한 명목가</p>
           </div>
         </div>
       )}
