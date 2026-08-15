@@ -1,4 +1,5 @@
 import CandleChart from "@/components/CandleChart";
+import TradePanel from "@/components/TradePanel";
 import WatchlistButton from "@/components/WatchlistButton";
 import { marketProvider } from "@/lib/market";
 import {
@@ -65,7 +66,8 @@ export default async function StockDetailPage({
   const color = changeColorClass(quote.change);
 
   return (
-    <main className="mx-auto w-full max-w-3xl flex-1 px-6 py-10">
+    // pb-28: 하단 고정 매수/매도 바(TradePanel)에 콘텐츠가 가려지지 않도록
+    <main className="mx-auto w-full max-w-3xl flex-1 px-6 pt-10 pb-28">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">{quote.name}</h1>
@@ -128,6 +130,8 @@ export default async function StockDetailPage({
           </table>
         </div>
       </details>
+
+      <TradePanel code={quote.code} name={quote.name} price={quote.price} date={quote.date} />
     </main>
   );
 }

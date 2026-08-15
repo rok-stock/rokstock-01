@@ -1,14 +1,25 @@
 "use client";
 
 import {
+  cancelOrder,
+  placeBuy,
+  placeSell,
+  type BuyInput,
+  type OrderError,
+  type SellInput,
+} from "@/lib/game/engine";
+import {
   ensureGameStarted,
   getGameSnapshot,
   getServerGameSnapshot,
   resetGameStore,
   subscribeGame,
+  updateGame,
 } from "@/lib/game/store";
 import { useCallback, useEffect, useSyncExternalStore } from "react";
 import { resetWatchlist } from "./useWatchlist";
+
+export type OrderResult = { ok: true } | { ok: false; reason: OrderError };
 
 /**
  * 게임 상태 훅 — 계좌·포지션·주문·내역 전체를 구독한다.
@@ -36,5 +47,35 @@ export function useGame() {
     if (options?.clearWatchlist) resetWatchlist();
   }, []);
 
-  return { state, ready, resetGame };
+  const placeBuyOrder = useCallback((input: BuyInput): OrderResult => {
+    let result: OrderResult = { ok: false, reason: "invalid_amount" };
+    updateGame((current) => {
+      const r = placeBuy(current, input, new Date());
+      result = r.ok ? { ok: true } : r;
+      return r.ok ? r.state : current;
+    });
+    return result;
+  }, []);
+
+  const placeSellOrder = useCallback((input: SellInput): OrderResult => {
+    let result: OrderResult = { ok: false, reason: "invalid_quantity" };
+    updateGame((current) => {
+      const r = placeSell(current, input, new Date());
+      result = r.ok ? { ok: true } : r;
+      return r.ok ? r.state : current;
+    });
+    return result;
+  }, []);
+
+  const cancelPendingOrder = useCallback((orderId: string): OrderResult => {
+    let result: OrderResult = { ok: false, reason: "unknown_order" };
+    updateGame((current) => {
+      const r = cancelOrder(current, orderId);
+      result = r.ok ? { ok: true } : r;
+      return r.ok ? r.state : current;
+    });
+    return result;
+  }, []);
+
+  return { state, ready, resetGame, placeBuyOrder, placeSellOrder, cancelPendingOrder };
 }

@@ -1,4 +1,5 @@
 import AccountCard from "@/components/AccountCard";
+import OnboardingCard from "@/components/OnboardingCard";
 import WatchlistPanel from "@/components/WatchlistPanel";
 import { marketProvider } from "@/lib/market";
 import Link from "next/link";
@@ -24,7 +25,9 @@ export default function Home() {
         </p>
       )}
 
-      <div className="mt-8">
+      <OnboardingCard />
+
+      <div className="mt-6">
         <AccountCard />
       </div>
 
