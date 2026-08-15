@@ -25,3 +25,16 @@ export const SELL_TAX_RATE = 0.0015;
  * 오래된 내역을 잘라내도 누적 실현손익(realizedPnlTotal)은 보존된다.
  */
 export const MAX_TRADES_KEPT = 500;
+
+/**
+ * 수수료/세금 계산 — 정수 연산으로 부동소수점 오차를 피한다.
+ * `2_680_000 * 0.00015` 는 401.9999…가 되어 floor 하면 1원이 어긋난다.
+ * 금액 × 15 는 정수라 정확하고(2^53 안), 그다음 나눠서 절사한다.
+ */
+export function commissionOf(amount: number): number {
+  return Math.floor((amount * 15) / 100_000); // 0.015%
+}
+
+export function sellTaxOf(amount: number): number {
+  return Math.floor((amount * 15) / 10_000); // 0.15%
+}

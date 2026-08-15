@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import GameSettlement from "@/components/GameSettlement";
 import SiteHeader from "@/components/SiteHeader";
 import TabBar from "@/components/TabBar";
 import VersionBadge from "@/components/VersionBadge";
@@ -38,6 +39,7 @@ export default function RootLayout({
           <VersionBadge />
         </footer>
         <TabBar />
+        <GameSettlement />
       </body>
     </html>
   );

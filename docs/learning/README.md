@@ -28,3 +28,4 @@
 | [stock-price-basics.md](./stock-price-basics.md) | 현재가·등락률·거래량, 캔들(OHLC) 읽는 법 | M1 |
 | [stock-order-execution.md](./stock-order-execution.md) | 주문 vs 체결, 시장가/지정가, 룩어헤드 편향 | G3 |
 | [stock-fees-and-taxes.md](./stock-fees-and-taxes.md) | 위탁수수료, 증권거래세·농특세 인하 연혁, 거래 비용 체감 | G3 |
+| [stock-avg-price-pnl.md](./stock-avg-price-pnl.md) | 평단가 계산, 평가손익 vs 실현손익 | G4 |

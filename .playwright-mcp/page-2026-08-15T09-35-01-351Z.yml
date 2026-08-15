@@ -1,0 +1,46 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e3]:
+      - link "RokStock" [ref=e4] [cursor=pointer]:
+        - /url: /
+      - searchbox "종목 검색" [ref=e6]
+  - main [ref=e7]:
+    - heading "설정" [level=1] [ref=e8]
+    - generic [ref=e9]:
+      - heading "게임 정보" [level=2] [ref=e10]
+      - generic [ref=e11]:
+        - generic [ref=e12]:
+          - term [ref=e13]: 시작일
+          - definition [ref=e14]: 2026-08-15
+        - generic [ref=e15]:
+          - term [ref=e16]: 체결된 거래
+          - definition [ref=e17]: 0회
+        - generic [ref=e18]:
+          - term [ref=e19]: 누적 실현손익
+          - definition [ref=e20]: 0원
+    - generic [ref=e21]:
+      - heading "데이터 안내" [level=2] [ref=e22]
+      - paragraph [ref=e23]:
+        - text: 시세는 공공데이터포털의
+        - strong [ref=e24]: 일별 데이터(T+1)
+        - text: 로, 다음 영업일 오후 1시경 갱신됩니다. 화면의 가격은 항상 가장 최근 영업일의
+        - strong [ref=e25]: 종가
+        - text: 이며, 주문도
+        - strong [ref=e26]: 다음 거래일 종가
+        - text: 로 체결됩니다 — 그래서 이 게임의 이름이 “하루 늦은 모의주식”입니다.
+    - generic [ref=e27]:
+      - heading "게임 초기화" [level=2] [ref=e28]
+      - generic [ref=e29]:
+        - paragraph [ref=e30]: 계좌·보유 종목·주문·거래 내역을 모두 지우고 초기 자금 1억 원으로 새 게임을 시작합니다.
+        - button "게임 초기화…" [ref=e31]
+  - contentinfo [ref=e32]:
+    - generic [ref=e33]: v0.7.0
+  - navigation "주요 메뉴" [ref=e34]:
+    - generic [ref=e35]:
+      - link "홈" [ref=e36] [cursor=pointer]:
+        - /url: /
+      - link "내역" [ref=e39] [cursor=pointer]:
+        - /url: /history
+      - link "설정" [ref=e42] [cursor=pointer]:
+        - /url: /settings
+  - alert [ref=e45]

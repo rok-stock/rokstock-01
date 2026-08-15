@@ -4,10 +4,13 @@ import {
   cancelOrder,
   placeBuy,
   placeSell,
+  settleOrders,
   type BuyInput,
   type OrderError,
   type SellInput,
+  type SettlementResult,
 } from "@/lib/game/engine";
+import type { DailyCandle } from "@/lib/market/types";
 import {
   ensureGameStarted,
   getGameSnapshot,
@@ -77,5 +80,27 @@ export function useGame() {
     return result;
   }, []);
 
-  return { state, ready, resetGame, placeBuyOrder, placeSellOrder, cancelPendingOrder };
+  /** 미체결 주문 정산 — 체결/반환 결과를 돌려준다 (개봉 연출용) */
+  const settlePendingOrders = useCallback(
+    (candlesByCode: ReadonlyMap<string, DailyCandle[]>): Pick<SettlementResult, "fills" | "refunds"> => {
+      let outcome: Pick<SettlementResult, "fills" | "refunds"> = { fills: [], refunds: [] };
+      updateGame((current) => {
+        const r = settleOrders(current, candlesByCode, new Date());
+        outcome = { fills: r.fills, refunds: r.refunds };
+        return r.state;
+      });
+      return outcome;
+    },
+    [],
+  );
+
+  return {
+    state,
+    ready,
+    resetGame,
+    placeBuyOrder,
+    placeSellOrder,
+    cancelPendingOrder,
+    settlePendingOrders,
+  };
 }
