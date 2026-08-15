@@ -21,6 +21,7 @@
 | [web-localstorage-state.md](./web-localstorage-state.md) | localStorage 단일 키 원자성, 스키마 버전, useSyncExternalStore 패턴 | G2 |
 | [web-mobile-bottom-sheet.md](./web-mobile-bottom-sheet.md) | 바텀시트, safe-area, 모바일 숫자 입력 | G3 |
 | [web-responsive-desktop.md](./web-responsive-desktop.md) | 모바일 퍼스트 반응형, v4 @utility, fixed 의 DOM 독립성, :focus-visible | G8 |
+| [web-aria-combobox.md](./web-aria-combobox.md) | ARIA 콤보박스 패턴, aria-activedescendant 가상 포커스 | G8 |
 
 ### 주식
 
