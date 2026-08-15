@@ -1,5 +1,6 @@
 "use client";
 
+import { applyAchievements, type AchievementDef } from "@/lib/game/achievements";
 import {
   cancelOrder,
   placeBuy,
@@ -8,8 +9,8 @@ import {
   type BuyInput,
   type OrderError,
   type SellInput,
-  type SettlementResult,
 } from "@/lib/game/engine";
+import type { PendingOrder, Trade } from "@/lib/game/types";
 import type { DailyCandle } from "@/lib/market/types";
 import {
   ensureGameStarted,
@@ -80,19 +81,39 @@ export function useGame() {
     return result;
   }, []);
 
-  /** 미체결 주문 정산 — 체결/반환 결과를 돌려준다 (개봉 연출용) */
+  /** 미체결 주문 정산 — 체결/반환/새 업적을 돌려준다 (개봉 연출용) */
   const settlePendingOrders = useCallback(
-    (candlesByCode: ReadonlyMap<string, DailyCandle[]>): Pick<SettlementResult, "fills" | "refunds"> => {
-      let outcome: Pick<SettlementResult, "fills" | "refunds"> = { fills: [], refunds: [] };
+    (
+      candlesByCode: ReadonlyMap<string, DailyCandle[]>,
+    ): { fills: Trade[]; refunds: PendingOrder[]; earned: AchievementDef[] } => {
+      let outcome: { fills: Trade[]; refunds: PendingOrder[]; earned: AchievementDef[] } = {
+        fills: [],
+        refunds: [],
+        earned: [],
+      };
       updateGame((current) => {
         const r = settleOrders(current, candlesByCode, new Date());
-        outcome = { fills: r.fills, refunds: r.refunds };
-        return r.state;
+        const a = applyAchievements(r.state);
+        outcome = { fills: r.fills, refunds: r.refunds, earned: a.earned };
+        return a.state;
       });
       return outcome;
     },
     [],
   );
+
+  /** 시간 경과형 업적(한 달 생존 등) 점검 — 앱 로드 시 한 번 부른다 */
+  const refreshAchievements = useCallback((): AchievementDef[] => {
+    // 새 업적이 없으면 쓰기 자체를 생략한다 (매 로드마다 불필요한 저장 방지)
+    if (applyAchievements(getGameSnapshot()).earned.length === 0) return [];
+    let earned: AchievementDef[] = [];
+    updateGame((current) => {
+      const a = applyAchievements(current);
+      earned = a.earned;
+      return a.state;
+    });
+    return earned;
+  }, []);
 
   return {
     state,
@@ -102,5 +123,6 @@ export function useGame() {
     placeSellOrder,
     cancelPendingOrder,
     settlePendingOrders,
+    refreshAchievements,
   };
 }

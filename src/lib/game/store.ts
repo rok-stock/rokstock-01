@@ -39,22 +39,29 @@ function getDefault(): GameState {
 }
 
 /**
- * 저장된 값을 GameState 로 되살린다. 스키마 버전이 다르거나 형태가 깨졌으면
- * 새 게임으로 되돌린다 — 향후 버전업 시 이 함수에 마이그레이션을 추가한다.
+ * 저장된 값을 GameState 로 되살린다. 아는 버전이면 현재 버전까지 단계적으로 승격하고,
+ * 모르는 버전/깨진 형태면 새 게임으로 되돌린다.
  */
 function migrate(raw: string): GameState {
   try {
-    const parsed = JSON.parse(raw) as Partial<GameState> | null;
-    if (
+    const parsed = JSON.parse(raw) as (Partial<GameState> & { schemaVersion?: number }) | null;
+    const hasBaseShape =
       parsed &&
-      parsed.schemaVersion === GAME_SCHEMA_VERSION &&
       typeof parsed.cash === "number" &&
       typeof parsed.startedAt === "string" &&
       Array.isArray(parsed.positions) &&
       Array.isArray(parsed.pendingOrders) &&
-      Array.isArray(parsed.trades)
-    ) {
-      return parsed as GameState;
+      Array.isArray(parsed.trades);
+
+    if (hasBaseShape) {
+      // v1 → v2: 업적 필드 추가. 기존 진행(계좌·포지션·내역)은 그대로 보존된다.
+      if (parsed.schemaVersion === 1) {
+        console.info("[game] 게임 상태를 v1 → v2 로 마이그레이션합니다 (업적 추가).");
+        return { ...(parsed as GameState), schemaVersion: 2, achievements: [] };
+      }
+      if (parsed.schemaVersion === GAME_SCHEMA_VERSION && Array.isArray(parsed.achievements)) {
+        return parsed as GameState;
+      }
     }
   } catch {
     // fall through
