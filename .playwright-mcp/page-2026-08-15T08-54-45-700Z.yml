@@ -1,0 +1,34 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e3]:
+      - link "RokStock" [ref=e4] [cursor=pointer]:
+        - /url: /
+      - searchbox "종목 검색" [ref=e6]
+  - main [ref=e7]:
+    - heading "하루 늦은 모의주식" [level=1] [ref=e8]
+    - paragraph [ref=e9]: 어제 종가로 고르고, 내일 종가에 체결됩니다. 1억 원으로 시작하세요.
+    - generic [ref=e11]:
+      - generic [ref=e12]:
+        - heading "주문 가능 금액" [level=2] [ref=e13]
+        - generic [ref=e14]: 2026-08-15 시작 · 1일째
+      - paragraph [ref=e15]: 100,000,000원
+    - heading "관심 종목" [level=2] [ref=e16]
+    - generic [ref=e18]:
+      - heading "관심 종목" [level=2] [ref=e19]
+      - paragraph [ref=e20]: 불러오는 중…
+    - paragraph [ref=e21]:
+      - text: 예시로
+      - link "삼성전자(005930)" [ref=e22] [cursor=pointer]:
+        - /url: /stocks/005930
+      - text: 를 열어볼 수 있습니다.
+  - contentinfo [ref=e23]:
+    - generic [ref=e24]: v0.5.0
+  - navigation "주요 메뉴" [ref=e25]:
+    - generic [ref=e26]:
+      - link "홈" [ref=e27] [cursor=pointer]:
+        - /url: /
+      - link "내역" [ref=e30] [cursor=pointer]:
+        - /url: /history
+      - link "설정" [ref=e33] [cursor=pointer]:
+        - /url: /settings
+  - alert [ref=e36]

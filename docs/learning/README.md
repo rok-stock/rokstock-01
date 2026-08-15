@@ -18,6 +18,7 @@
 |---|---|---|
 | [web-server-client-components.md](./web-server-client-components.md) | 서버/클라이언트 컴포넌트, 하이드레이션, Route Handler | M1 |
 | [web-isr-caching.md](./web-isr-caching.md) | ISR, 데이터 캐시와 태그, 온디맨드 재검증, generateStaticParams 함정 | G1 |
+| [web-localstorage-state.md](./web-localstorage-state.md) | localStorage 단일 키 원자성, 스키마 버전, useSyncExternalStore 패턴 | G2 |
 
 ### 주식
 
