@@ -1,0 +1,52 @@
+- generic [active] [ref=f1e1]:
+  - banner [ref=f1e2]:
+    - generic [ref=f1e3]:
+      - link "RokStock" [ref=f1e4] [cursor=pointer]:
+        - /url: /
+      - searchbox "종목 검색" [ref=f1e6]
+  - main [ref=f1e7]:
+    - heading "설정" [level=1] [ref=f1e8]
+    - generic [ref=f1e9]:
+      - heading "게임 정보" [level=2] [ref=f1e10]
+      - generic [ref=f1e11]:
+        - generic [ref=f1e12]:
+          - term [ref=f1e13]: 시작일
+          - definition [ref=f1e14]: 2026-08-15
+        - generic [ref=f1e15]:
+          - term [ref=f1e16]: 체결된 거래
+          - definition [ref=f1e17]: 0회
+        - generic [ref=f1e18]:
+          - term [ref=f1e19]: 누적 실현손익
+          - definition [ref=f1e20]: 0원
+    - generic [ref=f1e21]:
+      - heading "데이터 안내" [level=2] [ref=f1e22]
+      - paragraph [ref=f1e23]:
+        - text: 시세는 공공데이터포털의
+        - strong [ref=f1e24]: 일별 데이터(T+1)
+        - text: 로, 다음 영업일 오후 1시경 갱신됩니다. 화면의 가격은 항상 가장 최근 영업일의
+        - strong [ref=f1e25]: 종가
+        - text: 이며, 주문도
+        - strong [ref=f1e26]: 다음 거래일 종가
+        - text: 로 체결됩니다 — 그래서 이 게임의 이름이 “하루 늦은 모의주식”입니다.
+    - generic [ref=f1e27]:
+      - heading "게임 초기화" [level=2] [ref=f1e28]
+      - generic [ref=f1e29]:
+        - paragraph [ref=f1e30]: 정말 초기화할까요? 되돌릴 수 없습니다.
+        - paragraph [ref=f1e46]: "지금까지: 2026-08-15 시작 · 거래 0회 · 실현손익 0원"
+        - generic [ref=f1e47]:
+          - checkbox "관심 종목도 초기화" [ref=f1e48]
+          - text: 관심 종목도 초기화
+        - generic [ref=f1e49]:
+          - button "취소" [ref=f1e50]
+          - button "초기화 확인" [ref=f1e51]
+  - contentinfo [ref=f1e32]:
+    - generic [ref=f1e33]: v0.5.0
+  - navigation "주요 메뉴" [ref=f1e34]:
+    - generic [ref=f1e35]:
+      - link "홈" [ref=f1e36] [cursor=pointer]:
+        - /url: /
+      - link "내역" [ref=f1e39] [cursor=pointer]:
+        - /url: /history
+      - link "설정" [ref=f1e42] [cursor=pointer]:
+        - /url: /settings
+  - alert [ref=f1e45]

@@ -92,15 +92,15 @@ KOSPI 전 종목 데이터를 로컬에서 생성해 커밋하고, 운영 중 AP
 
 ---
 
-## G2. 게임 상태 코어 + 리셋 ⬜
+## G2. 게임 상태 코어 + 리셋 ✅
 
 localStorage 기반 게임 상태와 앱 골격(하단 탭)을 만든다.
 
-- [ ] 게임 상태 스키마 (`rokstock:game` 단일 키 + schemaVersion) — 현금 1억, 포지션, 주문, 내역
-- [ ] `useGame` 훅 (useSyncExternalStore, 기존 useWatchlist 패턴 재사용)
-- [ ] 하단 탭 내비게이션 (홈 / 내역 / 설정)
-- [ ] 설정 화면: 게임 초기화(2단계 확인 + 성적표), 데이터 안내
-- [ ] 홈에 계좌 카드 (현금·시작일)
+- [x] 게임 상태 스키마 (`rokstock:game` 단일 키 + schemaVersion) — 현금 1억, 포지션, 주문, 내역
+- [x] `useGame` 훅 (useSyncExternalStore, 기존 useWatchlist 패턴 재사용)
+- [x] 하단 탭 내비게이션 (홈 / 내역 / 설정)
+- [x] 설정 화면: 게임 초기화(2단계 확인, 진행 요약 표시), 데이터 안내
+- [x] 홈에 계좌 카드 (현금·시작일) + 게임 컨셉 문구
 
 **학습 목표**
 - 웹개발: localStorage 상태 설계(단일 키 원자성, 스키마 버저닝/마이그레이션), 모바일 safe-area

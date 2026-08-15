@@ -1,3 +1,4 @@
+import AccountCard from "@/components/AccountCard";
 import WatchlistPanel from "@/components/WatchlistPanel";
 import { marketProvider } from "@/lib/market";
 import Link from "next/link";
@@ -10,9 +11,9 @@ export default function Home() {
 
   return (
     <main className="mx-auto w-full max-w-3xl flex-1 px-6 py-10">
-      <h1 className="text-2xl font-semibold tracking-tight">시세 조회 대시보드</h1>
+      <h1 className="text-2xl font-semibold tracking-tight">하루 늦은 모의주식</h1>
       <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
-        관심 종목의 시세를 모아 보고, 종목을 눌러 일봉 차트를 확인하세요.
+        어제 종가로 고르고, 내일 종가에 체결됩니다. 1억 원으로 시작하세요.
       </p>
 
       {isMock && (
@@ -23,7 +24,12 @@ export default function Home() {
         </p>
       )}
 
-      <div className="mt-8 rounded-2xl border border-zinc-200 p-3 dark:border-zinc-800">
+      <div className="mt-8">
+        <AccountCard />
+      </div>
+
+      {/* WatchlistPanel 이 자체 "관심 종목" 제목을 갖고 있다 */}
+      <div className="mt-6 rounded-2xl border border-zinc-200 p-3 dark:border-zinc-800">
         <WatchlistPanel />
       </div>
 

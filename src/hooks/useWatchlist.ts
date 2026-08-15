@@ -65,6 +65,11 @@ function write(codes: string[]) {
   emit();
 }
 
+/** 관심 종목을 기본값으로 초기화 — 게임 리셋의 "관심종목도 초기화" 옵션에서 쓴다 */
+export function resetWatchlist() {
+  write(DEFAULT_CODES);
+}
+
 /**
  * 관심 종목을 브라우저 localStorage 에 저장하는 훅.
  *
