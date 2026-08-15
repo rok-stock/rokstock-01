@@ -1,3 +1,4 @@
+import { seedBasePrice } from "./seed";
 import { findStockByCode, searchStockMaster, STOCK_MASTER } from "./stock-master";
 import type { DailyCandle, MarketDataProvider, Quote } from "./types";
 
@@ -8,35 +9,6 @@ import type { DailyCandle, MarketDataProvider, Quote } from "./types";
  * `Math.random()`을 쓰면 서버 렌더 결과와 클라이언트 렌더 결과가 달라져 하이드레이션이 깨지고,
  * 새로고침할 때마다 차트가 춤춘다. 그래서 종목코드에서 시드를 뽑아 쓰는 의사난수를 쓴다.
  */
-
-/** 종목별 기준 가격 (대략적인 실제 주가대를 흉내낸 값) */
-const BASE_PRICE: Record<string, number> = {
-  "005930": 74000,
-  "000660": 178000,
-  "373220": 402000,
-  "207940": 782000,
-  "005380": 235000,
-  "000270": 108000,
-  "068270": 189000,
-  "005490": 385000,
-  "035420": 187000,
-  "035720": 45000,
-  "105560": 72000,
-  "055550": 48000,
-  "012330": 232000,
-  "051910": 385000,
-  "006400": 372000,
-  "028260": 142000,
-  "015760": 21000,
-  "032830": 78000,
-  "003670": 285000,
-  "247540": 195000,
-  "086520": 78000,
-  "091990": 68000,
-  "196170": 312000,
-  "066970": 152000,
-  "058470": 168000,
-};
 
 const DEFAULT_BASE_PRICE = 50000;
 
@@ -109,7 +81,8 @@ const HISTORY_DAYS = 260;
 function generateHistory(code: string): DailyCandle[] {
   const random = createRandom(seedFrom(code));
   const dates = recentBusinessDays(HISTORY_DAYS);
-  const base = BASE_PRICE[code] ?? DEFAULT_BASE_PRICE;
+  // 기준 가격은 시드 스냅샷의 실제 종가를 쓴다 — 목업이어도 가격대는 그럴듯하게.
+  const base = seedBasePrice(code) ?? DEFAULT_BASE_PRICE;
 
   // 시작가는 기준가에서 ±15% 안쪽으로 흩어뜨린다
   let close = base * (0.85 + random() * 0.3);
@@ -179,6 +152,12 @@ export const mockProvider: MarketDataProvider = {
     return codes
       .map((code) => quoteFromCandles(code, generateCandles(code, 2)))
       .filter((quote): quote is Quote => quote !== null);
+  },
+
+  async getAllQuotes() {
+    return STOCK_MASTER.map((stock) =>
+      quoteFromCandles(stock.code, generateCandles(stock.code, 2)),
+    ).filter((quote): quote is Quote => quote !== null);
   },
 
   async getDailyCandles(code, days) {

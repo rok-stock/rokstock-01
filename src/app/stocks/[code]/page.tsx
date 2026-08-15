@@ -15,6 +15,22 @@ import { notFound } from "next/navigation";
 const CHART_DAYS = 60;
 
 /**
+ * ISR — 렌더 결과를 1시간 캐시하고 백그라운드에서 재생성한다.
+ * 시세가 하루 한 번(T+1 13시) 갱신되는 데이터라 이 정도면 충분하고,
+ * 13시 직후엔 cron 이 `/api/revalidate` 로 즉시 무효화한다.
+ */
+export const revalidate = 3600;
+
+/**
+ * 940여 종목을 빌드 때 전부 미리 만들 필요는 없다. 빈 배열을 반환하면
+ * "방문한 종목만 그때 생성해 ISR 캐시"가 된다 — 이 함수가 아예 없으면
+ * 매 요청 동적 렌더링으로 떨어진다는 게 함정. (docs/generate-static-params 참고)
+ */
+export function generateStaticParams(): Array<{ code: string }> {
+  return [];
+}
+
+/**
  * 종목 상세.
  *
  * 서버 컴포넌트다. 시세 조회가 서버에서 끝나므로 API 키가 브라우저로 가지 않고,
