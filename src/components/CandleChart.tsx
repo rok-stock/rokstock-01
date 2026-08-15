@@ -52,7 +52,7 @@ export default function CandleChart({ candles }: { candles: DailyCandle[] }) {
         rightPriceScale: { borderColor: gridColor },
         timeScale: { borderColor: gridColor, timeVisible: false },
         crosshair: { mode: 1 },
-        height: 360,
+        // 크기는 autoSize 가 컨테이너(h-[450px] lg:h-[560px])를 추종한다
         autoSize: true,
       });
 
@@ -158,7 +158,7 @@ export default function CandleChart({ candles }: { candles: DailyCandle[] }) {
         </div>
       </dl>
 
-      <div ref={containerRef} className="h-[450px] w-full" />
+      <div ref={containerRef} className="h-[450px] w-full lg:h-[560px]" />
     </div>
   );
 }

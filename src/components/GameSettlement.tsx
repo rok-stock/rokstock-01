@@ -1,6 +1,7 @@
 "use client";
 
 import { useGame } from "@/hooks/useGame";
+import { useEscapeClose } from "@/hooks/useEscapeClose";
 import type { AchievementDef } from "@/lib/game/achievements";
 import type { PendingOrder, Trade } from "@/lib/game/types";
 import { getGameSnapshot } from "@/lib/game/store";
@@ -34,6 +35,9 @@ export default function GameSettlement() {
   const runningRef = useRef(false);
   const lastRunRef = useRef(0);
   const checkedTimeRef = useRef(false);
+
+  const closeOutcome = useCallback(() => setOutcome(null), []);
+  useEscapeClose(outcome !== null, closeOutcome);
 
   const attempt = useCallback(async () => {
     if (runningRef.current) return;
@@ -102,9 +106,15 @@ export default function GameSettlement() {
   if (!outcome) return null;
 
   return (
-    <div className="fixed inset-0 z-50" role="dialog" aria-modal="true" aria-label="체결 결과">
+    // 모바일: 하단 바텀시트 / 데스크톱(lg): 중앙 모달. 시트는 lg:relative (static 이면 딤이 위를 덮는다)
+    <div
+      className="fixed inset-0 z-50 lg:grid lg:place-items-center lg:p-6"
+      role="dialog"
+      aria-modal="true"
+      aria-label="체결 결과"
+    >
       <div className="absolute inset-0 bg-black/50" />
-      <div className="absolute inset-x-0 bottom-0 mx-auto max-w-3xl rounded-t-2xl bg-white p-5 pb-[calc(1.5rem+env(safe-area-inset-bottom))] dark:bg-zinc-900">
+      <div className="absolute inset-x-0 bottom-0 mx-auto max-w-3xl rounded-t-2xl bg-white p-5 pb-[calc(1.5rem+env(safe-area-inset-bottom))] lg:relative lg:inset-auto lg:w-full lg:max-w-lg lg:rounded-2xl lg:p-6 lg:pb-6 lg:shadow-xl dark:bg-zinc-900">
         {outcome.fills.length > 0 || outcome.refunds.length > 0 ? (
           <>
             <h2 className="text-lg font-bold">📬 체결 결과가 도착했어요</h2>

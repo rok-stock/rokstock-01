@@ -1,3 +1,0 @@
-[     396ms] [INFO] [game] 게임 상태를 v1 → v2 로 마이그레이션합니다 (업적 추가). @ http://localhost:3457/_next/static/chunks/3qf68iv_qixfr.js:0
-[    5440ms] [WARNING] The resource http://localhost:3457/_next/static/chunks/2k8sf5v4zv6xs.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally. @ http://localhost:3457/:0
-[   22309ms] [WARNING] The resource http://localhost:3457/_next/static/chunks/2k8sf5v4zv6xs.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally. @ http://localhost:3457/:0
