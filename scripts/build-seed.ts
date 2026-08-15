@@ -67,16 +67,28 @@ async function buildMaster(
       basDt,
     });
     const kospi = all.filter((item) => item.mrktCtg?.toUpperCase() === "KOSPI");
-    assertRowCount("종목 마스터", kospi.length);
 
-    const rows = kospi
-      .map((item): [string, string, string] => [
-        normalizeCode(item.srtnCd),
-        item.itmsNm.trim(),
-        item.crno?.trim() ?? "",
-      ])
-      .sort((a, b) => a[0].localeCompare(b[0]));
-    console.log(`  기준일 ${ymdToIso(basDt)}, KOSPI ${rows.length}종목 (전체 ${all.length}건)`);
+    const byCode = new Map<string, [string, string, string]>();
+    for (const item of kospi) {
+      const code = normalizeCode(item.srtnCd);
+      byCode.set(code, [code, item.itmsNm.trim(), item.crno?.trim() ?? ""]);
+    }
+
+    // KRX상장종목정보에는 우선주가 빠져 있다 (예: 005935 삼성전자우).
+    // 시세 스냅샷에는 있으므로 병합하고, 법인등록번호는 보통주(앞 5자리 + "0")에서 유도한다.
+    let preferred = 0;
+    for (const [code, name] of snapshot.nameByCode) {
+      if (byCode.has(code)) continue;
+      const commonCrno = byCode.get(`${code.slice(0, 5)}0`)?.[2] ?? "";
+      byCode.set(code, [code, name, commonCrno]);
+      preferred += 1;
+    }
+
+    const rows = [...byCode.values()].sort((a, b) => a[0].localeCompare(b[0]));
+    assertRowCount("종목 마스터", rows.length);
+    console.log(
+      `  기준일 ${ymdToIso(basDt)}, KOSPI ${rows.length}종목 (상장종목정보 ${kospi.length} + 시세 병합 ${preferred})`,
+    );
     return { asOf: ymdToIso(basDt), rows };
   } catch (error) {
     if (!(error instanceof DataGoKrAuthError)) throw error;
