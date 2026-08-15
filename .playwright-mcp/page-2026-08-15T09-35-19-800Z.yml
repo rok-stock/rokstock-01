@@ -1,0 +1,81 @@
+- generic [active] [ref=f1e1]:
+  - banner [ref=f1e2]:
+    - generic [ref=f1e3]:
+      - link "RokStock" [ref=f1e4] [cursor=pointer]:
+        - /url: /
+      - searchbox "종목 검색" [ref=f1e6]
+  - main [ref=f1e7]:
+    - heading "하루 늦은 모의주식" [level=1] [ref=f1e8]
+    - paragraph [ref=f1e9]: 어제 종가로 고르고, 내일 종가에 체결됩니다. 1억 원으로 시작하세요.
+    - generic [ref=f1e10]:
+      - generic [ref=f1e11]:
+        - heading "🐢 왜 “하루 늦은” 모의주식인가요?" [level=2] [ref=f1e12]
+        - button "알겠어요 ✓" [ref=f1e13]
+      - list [ref=f1e14]:
+        - listitem [ref=f1e15]:
+          - generic [ref=f1e16]: "1"
+          - generic [ref=f1e17]:
+            - paragraph [ref=f1e18]: 시세는 하루 늦게 옵니다
+            - paragraph [ref=f1e19]: 공공데이터는 다음 영업일 오후 1시에 공개돼요. 화면 가격은 항상 최근 영업일 종가입니다.
+        - listitem [ref=f1e20]:
+          - generic [ref=f1e21]: "2"
+          - generic [ref=f1e22]:
+            - paragraph [ref=f1e23]: 주문은 다음 거래일 종가로 체결
+            - paragraph [ref=f1e24]: 오늘 낸 주문은 다음 거래일 장 마감 가격으로 체결됩니다. 미리 가격을 알 수 없어요 — 진짜 투자처럼요.
+        - listitem [ref=f1e25]:
+          - generic [ref=f1e26]: "3"
+          - generic [ref=f1e27]:
+            - paragraph [ref=f1e28]: 매일 결과를 개봉하세요
+            - paragraph [ref=f1e29]: 다음 날 접속하면 어제 주문이 얼마에 체결됐는지 알 수 있어요. 1억 원으로 시작합니다.
+    - generic [ref=f1e31]:
+      - generic [ref=f1e32]:
+        - heading "주문 가능 금액" [level=2] [ref=f1e33]
+        - generic [ref=f1e34]: 2026-08-10 시작 · 6일째
+      - paragraph [ref=f1e35]: 90,000,000원
+      - paragraph [ref=f1e36]: 주문에 묶인 금액 10,000,000원
+    - generic [ref=f1e38]:
+      - heading "관심 종목" [level=2] [ref=f1e39]
+      - list [ref=f1e40]:
+        - listitem [ref=f1e41]:
+          - link [ref=f1e42] [cursor=pointer]:
+            - /url: /stocks/005930
+            - generic [ref=f1e43]:
+              - paragraph [ref=f1e44]: 삼성전자
+              - paragraph [ref=f1e45]: 005930 · KOSPI
+            - generic [ref=f1e46]:
+              - paragraph [ref=f1e47]: 268,000
+              - paragraph [ref=f1e48]: +12,500 (+4.89%)
+        - listitem [ref=f1e49]:
+          - link [ref=f1e50] [cursor=pointer]:
+            - /url: /stocks/000660
+            - generic [ref=f1e51]:
+              - paragraph [ref=f1e52]: SK하이닉스
+              - paragraph [ref=f1e53]: 000660 · KOSPI
+            - generic [ref=f1e54]:
+              - paragraph [ref=f1e55]: 1,593,000
+              - paragraph [ref=f1e56]: +89,000 (+5.92%)
+        - listitem [ref=f1e57]:
+          - link [ref=f1e58] [cursor=pointer]:
+            - /url: /stocks/035420
+            - generic [ref=f1e59]:
+              - paragraph [ref=f1e60]: NAVER
+              - paragraph [ref=f1e61]: 035420 · KOSPI
+            - generic [ref=f1e62]:
+              - paragraph [ref=f1e63]: 226,500
+              - paragraph [ref=f1e64]: +11,000 (+5.10%)
+    - paragraph [ref=f1e65]:
+      - text: 예시로
+      - link "삼성전자(005930)" [ref=f1e66] [cursor=pointer]:
+        - /url: /stocks/005930
+      - text: 를 열어볼 수 있습니다.
+  - contentinfo [ref=f1e67]:
+    - generic [ref=f1e68]: v0.7.0
+  - navigation "주요 메뉴" [ref=f1e69]:
+    - generic [ref=f1e70]:
+      - link "홈" [ref=f1e71] [cursor=pointer]:
+        - /url: /
+      - link "내역" [ref=f1e74] [cursor=pointer]:
+        - /url: /history
+      - link "설정" [ref=f1e77] [cursor=pointer]:
+        - /url: /settings
+  - alert [ref=f1e80]

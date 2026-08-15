@@ -2,7 +2,7 @@
 
 import { useGame } from "@/hooks/useGame";
 import { expectedExecDate } from "@/lib/game/engine";
-import { COMMISSION_RATE, SELL_TAX_RATE } from "@/lib/game/rules";
+import { COMMISSION_RATE, commissionOf, sellTaxOf } from "@/lib/game/rules";
 import { formatPrice } from "@/lib/market/format";
 import { useEffect, useRef, useState } from "react";
 
@@ -94,8 +94,8 @@ export default function TradePanel({ code, name, price, date }: TradePanelProps)
   const estimatedQty = Math.floor(value / (price * (1 + COMMISSION_RATE)));
   // 매도: 예상 정산 금액
   const sellGross = value * price;
-  const sellFee = Math.floor(sellGross * COMMISSION_RATE);
-  const sellTax = Math.floor(sellGross * SELL_TAX_RATE);
+  const sellFee = commissionOf(sellGross);
+  const sellTax = sellTaxOf(sellGross);
   const sellNet = sellGross - sellFee - sellTax;
   const sellPnl = position ? sellNet - value * position.avgPrice : 0;
 
