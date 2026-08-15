@@ -198,7 +198,7 @@ localStorage 기반 게임 상태와 앱 골격(하단 탭)을 만든다.
 - [x] 바텀시트 3종(주문/개봉/용어) → 데스크톱 중앙 모달
 - [x] 차트 높이 확대 (450px → lg 560px)
 - [x] 키보드: 전역 :focus-visible 링, 모달 Esc 닫기(useEscapeClose), 검색 Esc / hover 누락 보강
-- [ ] 검색 드롭다운 방향키/Enter 콤보박스 (후속)
+- [x] 검색 드롭다운 방향키/Enter 콤보박스 (ARIA combobox + aria-activedescendant)
 
 **학습 목표**
 - 웹개발: 모바일 퍼스트 반응형, fixed 의 DOM 위치 독립성, grid order, :focus-visible
