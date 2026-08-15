@@ -50,9 +50,34 @@ export interface DailyCandle {
   volume: number;
 }
 
+/** 지수(코스피 등) 일별 시세 한 점 */
+export interface IndexPoint {
+  /** 기준일자 (YYYY-MM-DD) */
+  date: string;
+  /** 종가 (지수 포인트) */
+  close: number;
+  /** 전일 대비 */
+  change: number;
+  /** 전일 대비 등락률(%) */
+  changeRate: number;
+}
+
+/**
+ * 특정 영업일의 전 종목 시세 묶음.
+ * 하루 한 번 갱신되는 데이터라, 이 스냅샷 하나가 시세의 단일 진실 공급원이다.
+ */
+export interface MarketSnapshot {
+  /** 기준 영업일 (YYYY-MM-DD) */
+  date: string;
+  /** api: 공공데이터포털 실시간 조회 / seed: 커밋된 시드 데이터 (API 실패 시 안전망) */
+  source: "api" | "seed";
+  /** 종목코드 → 시세 */
+  quotes: ReadonlyMap<string, Quote>;
+}
+
 /**
  * 시세 공급자 인터페이스.
- * 목업이든 실제 API든 이 네 가지만 제공하면 화면이 동작한다.
+ * 목업이든 실제 API든 이것만 제공하면 화면이 동작한다.
  */
 export interface MarketDataProvider {
   /** 공급자 식별자 (화면/로그에 표시) */
@@ -63,6 +88,8 @@ export interface MarketDataProvider {
   getQuote(code: string): Promise<Quote | null>;
   /** 여러 종목 시세 (관심 종목 목록용) */
   getQuotes(codes: string[]): Promise<Quote[]>;
+  /** 전 종목 최근 영업일 시세 (등락 랭킹/포트폴리오 평가용) */
+  getAllQuotes(): Promise<Quote[]>;
   /** 최근 N일치 일봉 (오래된 날짜부터 오름차순) */
   getDailyCandles(code: string, days: number): Promise<DailyCandle[]>;
 }

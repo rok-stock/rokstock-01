@@ -67,18 +67,23 @@
 
 ---
 
-## G1. 시드 데이터 파이프라인 + 공급자 개편 + ISR ⬜
+## G1. 시드 데이터 파이프라인 + 공급자 개편 + ISR ✅
 
 KOSPI 전 종목 데이터를 로컬에서 생성해 커밋하고, 운영 중 API 호출을 최소화하는 기반을 만든다.
 
-- [ ] 시드 생성 스크립트 (`scripts/build-seed.ts`) — KOSPI 종목 마스터(+법인등록번호),
+- [x] 시드 생성 스크립트 (`scripts/build-seed.ts`) — KOSPI 종목 마스터(+법인등록번호),
       최근 5영업일 전 종목 시세 스냅샷, KOSPI 지수 1년치
-- [ ] 시드 산출물 커밋 (`src/data/*.json`, 튜플 포맷으로 용량 최적화 — raw 약 420KB)
-- [ ] 시세 공급자 개편: 전 종목 스냅샷 1회 페치가 단일 진실 공급원, 검색은 시드 로컬(API 0회),
+- [x] 시드 산출물 커밋 (`src/data/*.json`, 튜플 포맷으로 용량 최적화 — raw 약 300KB)
+- [x] 시세 공급자 개편: 전 종목 스냅샷 1회 페치가 단일 진실 공급원, 검색은 시드 로컬(API 0회),
       API 실패 시 시드 fallback
-- [ ] ISR 적용 (`export const revalidate` + fetch 태그) 및 온디맨드 재검증
+- [x] ISR 적용 (`export const revalidate` + fetch 태그) 및 온디맨드 재검증
       (`/api/revalidate` + Vercel cron, 13시 갱신 직후 반영)
-- [ ] Vercel 배포 설정 (vercel.json, 환경변수 문서화)
+- [x] Vercel 배포 설정 (vercel.json, 환경변수 문서화)
+
+**구현 메모**
+- KRX상장종목정보·지수시세정보 API가 아직 서비스키 미등록 상태라, 마스터는 시세 응답에서
+  유도(법인등록번호 없음)했고 지수 시드는 빈 파일이다. **승인 확인 후 `npm run seed` 재실행**
+  필요 (G6 전에 crno, G7 전에 지수).
 
 **학습 목표**
 - 웹개발: ISR(Incremental Static Regeneration), 데이터 캐시와 태그 재검증, cron

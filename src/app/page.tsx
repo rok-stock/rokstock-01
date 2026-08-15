@@ -2,6 +2,9 @@ import WatchlistPanel from "@/components/WatchlistPanel";
 import { marketProvider } from "@/lib/market";
 import Link from "next/link";
 
+/** ISR — 시세가 하루 한 번 갱신되므로 1시간 캐시로 충분하다 (자세한 건 docs/market-data.md) */
+export const revalidate = 3600;
+
 export default function Home() {
   const isMock = marketProvider.name === "mock";
 

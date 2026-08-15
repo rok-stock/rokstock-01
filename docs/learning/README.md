@@ -17,6 +17,7 @@
 | 문서 | 주제 | 관련 마일스톤 |
 |---|---|---|
 | [web-server-client-components.md](./web-server-client-components.md) | 서버/클라이언트 컴포넌트, 하이드레이션, Route Handler | M1 |
+| [web-isr-caching.md](./web-isr-caching.md) | ISR, 데이터 캐시와 태그, 온디맨드 재검증, generateStaticParams 함정 | G1 |
 
 ### 주식
 

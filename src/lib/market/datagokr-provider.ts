@@ -1,4 +1,7 @@
-import type { DailyCandle, Market, MarketDataProvider, Quote, Stock } from "./types";
+import { seedCandles } from "./seed";
+import { getMarketSnapshot } from "./snapshot";
+import { searchStockMaster } from "./stock-master";
+import type { DailyCandle, MarketDataProvider, Quote } from "./types";
 
 /**
  * 공공데이터포털 — 금융위원회 「주식시세정보」 공급자.
@@ -8,39 +11,27 @@ import type { DailyCandle, Market, MarketDataProvider, Quote, Stock } from "./ty
  * 알아둘 점:
  * - **실시간이 아니다.** 기준일자 기준 다음 영업일 오후에 갱신되는 일별 시세다(T+1).
  *   그래서 "현재가"라고 부르지만 실제로는 가장 최근 영업일의 **종가**다.
- * - 응답이 XML/JSON 두 형태이고, 오류일 때는 껍데기가 통째로 달라진다.
- *   그래서 파싱을 한곳(`parseItems`)에 모아두고 실패하면 명확한 에러를 던진다.
+ * - 시세는 전부 `getMarketSnapshot()`(전 종목 하루치 1회 페치)에서 나온다.
+ *   개별 종목을 API 로 따로 조회하는 건 일봉 차트(`getDailyCandles`)뿐이다.
+ * - 검색은 커밋된 시드 마스터를 로컬에서 뒤진다 — API 호출 0회.
  */
 
 const ENDPOINT =
   "https://apis.data.go.kr/1160100/service/GetStockSecuritiesInfoService/getStockPriceInfo";
 
-/** 캐시 수명(초). 데이터가 하루 한 번 갱신되므로 1시간이면 충분하다. */
-const REVALIDATE_SECONDS = 60 * 60;
+/**
+ * 일봉 데이터 캐시 수명(초). 과거 일봉은 사실상 불변이고 최신 하루만 추가되므로
+ * 스냅샷(1시간)보다 길게 6시간을 준다. 13시 갱신 직후엔 cron 이 태그로 무효화한다.
+ */
+const CANDLES_REVALIDATE_SECONDS = 6 * 60 * 60;
 
-/** API 응답의 항목 하나 (필요한 필드만 추림) */
 interface RawItem {
-  /** 기준일자 YYYYMMDD */
   basDt: string;
-  /** 단축 종목코드 */
   srtnCd: string;
-  /** 종목명 */
-  itmsNm: string;
-  /** 시장구분 (KOSPI/KOSDAQ/KONEX) */
-  mrktCtg: string;
-  /** 종가 */
-  clpr: string;
-  /** 전일 대비 */
-  vs: string;
-  /** 등락률(%) */
-  fltRt: string;
-  /** 시가 */
   mkp: string;
-  /** 고가 */
   hipr: string;
-  /** 저가 */
   lopr: string;
-  /** 거래량 */
+  clpr: string;
   trqu: string;
 }
 
@@ -64,7 +55,7 @@ async function callApi(params: Record<string, string>): Promise<RawItem[]> {
   const requestUrl = `${url.toString()}&serviceKey=${requireServiceKey()}`;
 
   const response = await fetch(requestUrl, {
-    next: { revalidate: REVALIDATE_SECONDS },
+    next: { revalidate: CANDLES_REVALIDATE_SECONDS, tags: ["datagokr", "candles"] },
   });
 
   if (!response.ok) {
@@ -114,29 +105,6 @@ function toIsoDate(basDt: string): string {
   return `${basDt.slice(0, 4)}-${basDt.slice(4, 6)}-${basDt.slice(6, 8)}`;
 }
 
-function toMarket(mrktCtg: string): Market {
-  return mrktCtg?.toUpperCase() === "KOSDAQ" ? "KOSDAQ" : "KOSPI";
-}
-
-function toStock(item: RawItem): Stock {
-  return {
-    code: item.srtnCd,
-    name: item.itmsNm,
-    market: toMarket(item.mrktCtg),
-  };
-}
-
-function toQuote(item: RawItem): Quote {
-  return {
-    ...toStock(item),
-    price: toNumber(item.clpr),
-    change: toNumber(item.vs),
-    changeRate: toNumber(item.fltRt),
-    volume: toNumber(item.trqu),
-    date: toIsoDate(item.basDt),
-  };
-}
-
 function toCandle(item: RawItem): DailyCandle {
   return {
     date: toIsoDate(item.basDt),
@@ -167,66 +135,45 @@ export const dataGoKrProvider: MarketDataProvider = {
   name: "datagokr",
 
   async searchStocks(query) {
-    const trimmed = query.trim();
-    if (!trimmed) return [];
-
-    // 숫자로만 이뤄졌으면 종목코드, 아니면 종목명으로 본다.
-    const isCode = /^\d+$/.test(trimmed);
-    const { beginBasDt, endBasDt } = lookbackRange(1);
-
-    const items = await callApi({
-      numOfRows: "50",
-      pageNo: "1",
-      beginBasDt,
-      endBasDt,
-      ...(isCode ? { likeSrtnCd: trimmed } : { likeItmsNm: trimmed }),
-    });
-
-    // 같은 종목이 날짜별로 여러 건 오므로 종목코드 기준으로 중복 제거
-    const unique = new Map<string, Stock>();
-    for (const item of items) {
-      if (!unique.has(item.srtnCd)) unique.set(item.srtnCd, toStock(item));
-    }
-    return [...unique.values()].slice(0, 10);
+    return searchStockMaster(query);
   },
 
   async getQuote(code) {
-    const { beginBasDt, endBasDt } = lookbackRange(2);
-    const items = await callApi({
-      numOfRows: "10",
-      pageNo: "1",
-      likeSrtnCd: code,
-      beginBasDt,
-      endBasDt,
-    });
-
-    const sorted = items
-      .filter((item) => item.srtnCd === code)
-      .sort((a, b) => a.basDt.localeCompare(b.basDt));
-
-    const latest = sorted[sorted.length - 1];
-    return latest ? toQuote(latest) : null;
+    const snapshot = await getMarketSnapshot();
+    return snapshot.quotes.get(code) ?? null;
   },
 
   async getQuotes(codes) {
-    // 이 API는 종목코드 여러 개를 한 번에 받지 못해 개별 호출한다.
-    // 응답은 revalidate 캐시를 타므로 반복 조회 비용은 크지 않다.
-    const quotes = await Promise.all(codes.map((code) => this.getQuote(code)));
-    return quotes.filter((quote): quote is Quote => quote !== null);
+    const snapshot = await getMarketSnapshot();
+    return codes
+      .map((code) => snapshot.quotes.get(code))
+      .filter((quote): quote is Quote => quote !== undefined);
+  },
+
+  async getAllQuotes() {
+    const snapshot = await getMarketSnapshot();
+    return [...snapshot.quotes.values()];
   },
 
   async getDailyCandles(code, days) {
     const { beginBasDt, endBasDt } = lookbackRange(days);
-    const items = await callApi({
-      numOfRows: String(Math.ceil(days * 1.6) + 10),
-      pageNo: "1",
-      likeSrtnCd: code,
-      beginBasDt,
-      endBasDt,
-    });
+    let items: RawItem[];
+    try {
+      items = await callApi({
+        numOfRows: String(Math.ceil(days * 1.6) + 10),
+        pageNo: "1",
+        likeSrtnCd: code,
+        beginBasDt,
+        endBasDt,
+      });
+    } catch (error) {
+      // API 장애 시에도 차트가 완전히 비지 않도록 시드의 며칠치로 버틴다.
+      console.warn(`[market] 일봉 조회 실패(${code}), 시드 데이터로 대체:`, error);
+      return seedCandles(code).slice(-days);
+    }
 
     return items
-      .filter((item) => item.srtnCd === code)
+      .filter((item) => item.srtnCd.trim().slice(-6) === code)
       .map(toCandle)
       .sort((a, b) => a.date.localeCompare(b.date))
       .slice(-days);
