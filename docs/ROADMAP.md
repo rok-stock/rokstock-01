@@ -207,6 +207,23 @@ localStorage 기반 게임 상태와 앱 골격(하단 탭)을 만든다.
 
 ---
 
+## G9. 공유·PWA ✅
+
+친구를 데려오는 문과, 홈 화면에 자리 잡는 아이콘.
+
+- [x] 설정에 공유하기 — Web Share API(OS 기본 공유 시트), 미지원 브라우저는 클립보드 복사 폴백
+- [x] OG 프리뷰 카드 — `opengraph-image.tsx`(1200×630, 한글 폰트 서브셋 + 캔들 실루엣) +
+      openGraph/twitter 메타
+- [x] PWA 매니페스트 — 설치 이름 "하루 늦은 모의주식" / 홈 화면 "하루주식"(짧게),
+      🐢 아이콘(512 maskable 겸용 + 애플 180)
+
+**학습 목표**
+- 웹개발: Web Share API 와 폴백 설계, Open Graph 프로토콜, PWA 매니페스트와 maskable 아이콘
+  → [learning/web-share-og-pwa.md](./learning/web-share-og-pwa.md)
+- 주식: (없음 — UI 단계)
+
+---
+
 ## 장기 아이디어 (구 M2~M6)
 
 게임이 완성된 뒤에 검토할 원래 로드맵의 아이디어들. 게임의 데이터 파이프라인과 도메인 로직

@@ -1,5 +1,6 @@
 "use client";
 
+import ShareButton from "@/components/ShareButton";
 import { useGame } from "@/hooks/useGame";
 import { ACHIEVEMENTS } from "@/lib/game/achievements";
 import { formatPrice } from "@/lib/market/format";
@@ -50,6 +51,19 @@ export default function SettingsPage() {
             <p className="text-zinc-400">불러오는 중…</p>
           )}
         </dl>
+      </section>
+
+      <section className="mt-8">
+        <h2 className="text-sm font-semibold text-zinc-500 dark:text-zinc-400">공유</h2>
+        <div className="mt-3 rounded-2xl border border-zinc-200 p-5 dark:border-zinc-800">
+          <p className="text-sm text-zinc-600 dark:text-zinc-300">
+            친구와 함께 각자 1억으로 시작해 수익률을 겨뤄보세요. 로그인이 없어서 링크만 열면
+            바로 시작됩니다.
+          </p>
+          <div className="mt-4">
+            <ShareButton />
+          </div>
+        </div>
       </section>
 
       <section className="mt-8">

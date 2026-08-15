@@ -17,8 +17,20 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  // OG 이미지 등 상대 경로 메타데이터를 절대 URL 로 만들어 주는 기준점
+  metadataBase: new URL("https://rokstock-01.vercel.app"),
   title: "RokStock — 하루 늦은 모의주식",
   description: "어제 종가로 고르고 내일 종가에 체결되는, 공공데이터 기반 모의투자 게임",
+  openGraph: {
+    title: "하루 늦은 모의주식",
+    description: "1억으로 시작! 어제 종가로 고르고, 내일 종가에 체결되는 모의투자 게임 🐢",
+    type: "website",
+    siteName: "RokStock",
+    locale: "ko_KR",
+  },
+  twitter: {
+    card: "summary_large_image",
+  },
 };
 
 export default function RootLayout({
