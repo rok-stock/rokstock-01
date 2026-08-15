@@ -61,7 +61,7 @@ async function buildMaster(
   console.log("[2/3] KOSPI 종목 마스터 (KRX상장종목정보)");
   try {
     const basDt = await findLatestDate(async (ymd) => {
-      const page = await callApi<RawListedItem>("GetKrxListedInfoService/getItemInfo", {
+      const page = await callApi<RawListedItem>("service/GetKrxListedInfoService/getItemInfo", {
         basDt: ymd,
         numOfRows: "1",
         pageNo: "1",
@@ -69,7 +69,7 @@ async function buildMaster(
       return page.totalCount;
     });
 
-    const all = await fetchAllPages<RawListedItem>("GetKrxListedInfoService/getItemInfo", {
+    const all = await fetchAllPages<RawListedItem>("service/GetKrxListedInfoService/getItemInfo", {
       basDt,
     });
     const kospi = all.filter((item) => item.mrktCtg?.toUpperCase() === "KOSPI");
@@ -148,7 +148,7 @@ async function buildSnapshot(businessDays: number): Promise<SnapshotResult> {
   for (const ymd of recentWeekdaysYmd(businessDays + 10)) {
     if (days.length >= businessDays) break;
     const items = await fetchAllPages<RawPriceItem>(
-      "GetStockSecuritiesInfoService/getStockPriceInfo",
+      "service/GetStockSecuritiesInfoService/getStockPriceInfo",
       { basDt: ymd, mrktCls: "KOSPI" },
     );
     if (items.length === 0) continue; // 휴장일 (또는 아직 미공개인 오늘)
@@ -197,7 +197,7 @@ async function buildIndex(): Promise<(string | number)[][]> {
 
   let items: RawIndexItem[];
   try {
-    items = await fetchAllPages<RawIndexItem>("GetMarketIndexInfoService/getStockMarketIndex", {
+    items = await fetchAllPages<RawIndexItem>("service/GetMarketIndexInfoService/getStockMarketIndex", {
       idxNm: "코스피",
       beginBasDt,
     });
@@ -250,8 +250,26 @@ interface RawCorpOutline {
   enpHmpgUrl: string;
 }
 
+interface RawDiviItem {
+  crno: string;
+  /** 주식 종류 코드 — 0101 이 보통주 */
+  scrsItmsKcd: string;
+  /** 배당 구분 (현금배당/주식배당) */
+  stckDvdnRcdNm: string;
+  /** 배당 기준일 YYYYMMDD */
+  dvdnBasDt: string;
+  /** 주당 일반 배당금 (원) */
+  stckGenrDvdnAmt: string;
+  /** 액면가 (원) */
+  stckParPrc: string;
+}
+
 const SUMMARY_FIELDS = ["crno", "bizYear", "sale", "bzopPft", "crtmNpf", "tast", "tdbt", "tcpt"];
 const OUTLINE_FIELDS = ["crno", "ceo", "estbDt", "lstgDt", "empeCnt", "avgSlry", "auditOpnn", "hmpg"];
+const DIVIDEND_FIELDS = ["crno", "annualDvdn", "lastBasDt", "parValue"];
+
+/** 연간 주당배당금으로 합산할 기간 — 분기 배당을 포함하도록 1년 + 여유 */
+const DIVIDEND_WINDOW_DAYS = 370;
 
 /** 보관할 최근 사업연도 수 */
 const FINANCIAL_YEARS = 3;
@@ -259,6 +277,7 @@ const FINANCIAL_YEARS = 3;
 async function buildFinancials(): Promise<{
   summaries: (string | number)[][];
   outlines: (string | number)[][];
+  dividends: (string | number)[][];
 }> {
   console.log("[financials] 기업 재무·개요 수집 (마스터의 법인등록번호 기준)");
   const master = JSON.parse(readFileSync(`${OUT_DIR}/stock-master.json`, "utf8")) as {
@@ -267,10 +286,15 @@ async function buildFinancials(): Promise<{
   };
   const crnoIdx = master.fields.indexOf("crno");
   const crnos = [...new Set(master.rows.map((row) => String(row[crnoIdx])).filter(Boolean))];
-  console.log(`  대상 법인 ${crnos.length}곳 × API 2회 — 10분쯤 걸립니다.`);
+  console.log(`  대상 법인 ${crnos.length}곳 × API 3회 (재무·개요·배당) — 15분쯤 걸립니다.`);
 
   const summaries: (string | number)[][] = [];
   const outlines: (string | number)[][] = [];
+  const dividends: (string | number)[][] = [];
+  const dividendCutoff = new Date(Date.now() - DIVIDEND_WINDOW_DAYS * 86_400_000)
+    .toISOString()
+    .slice(0, 10)
+    .replace(/-/g, "");
   let failed = 0;
 
   for (let i = 0; i < crnos.length; i += 1) {
@@ -278,7 +302,7 @@ async function buildFinancials(): Promise<{
     try {
       // 요약재무제표 — 전 연도가 오므로 연결(110) 우선으로 연도별 하나씩 추려 최근 3개년만
       const fina = await callApi<RawSummFinaStat>(
-        "GetFinaStatInfoService_V2/getSummFinaStat_V2",
+        "service/GetFinaStatInfoService_V2/getSummFinaStat_V2",
         { crno, numOfRows: "200", pageNo: "1" },
         1,
       );
@@ -305,7 +329,7 @@ async function buildFinancials(): Promise<{
       }
 
       const outline = await callApi<RawCorpOutline>(
-        "GetCorpBasicInfoService_V2/getCorpOutline_V2",
+        "service/GetCorpBasicInfoService_V2/getCorpOutline_V2",
         { crno, numOfRows: "1", pageNo: "1" },
         1,
       );
@@ -322,6 +346,24 @@ async function buildFinancials(): Promise<{
           info.enpHmpgUrl?.trim() ?? "",
         ]);
       }
+
+      // 배당 — 역대 이력이 통째로 오므로(삼성전자 170건) 한 번에 받아 최근 1년 현금배당만 합산.
+      // 경로 주의: 이 서비스는 `service/` 없이 1160100 바로 아래다.
+      const divi = await callApi<RawDiviItem>(
+        "GetStocDiviInfoService_V2/getDiviInfo_V2",
+        { crno, numOfRows: "1000", pageNo: "1" },
+        1,
+      );
+      const common = divi.items.filter((d) => d.scrsItmsKcd === "0101");
+      const recentCash = common.filter(
+        (d) => d.stckDvdnRcdNm?.includes("현금") && d.dvdnBasDt >= dividendCutoff,
+      );
+      const annualDvdn = recentCash.reduce((sum, d) => sum + toNumber(d.stckGenrDvdnAmt), 0);
+      const lastBasDt = recentCash.reduce((max, d) => (d.dvdnBasDt > max ? d.dvdnBasDt : max), "");
+      const parValue = toNumber(common[common.length - 1]?.stckParPrc);
+      if (annualDvdn > 0 || parValue > 0) {
+        dividends.push([crno, annualDvdn, lastBasDt ? ymdToIso(lastBasDt) : "", parValue]);
+      }
     } catch (error) {
       failed += 1;
       if (failed <= 5) console.warn(`  ⚠ ${crno}: ${String(error).slice(0, 100)}`);
@@ -331,17 +373,18 @@ async function buildFinancials(): Promise<{
   }
 
   console.log(
-    `  완료: 재무 ${summaries.length}행, 개요 ${outlines.length}곳, 실패 ${failed}곳`,
+    `  완료: 재무 ${summaries.length}행, 개요 ${outlines.length}곳, 배당 ${dividends.length}곳, 실패 ${failed}곳`,
   );
   if (outlines.length < crnos.length * 0.5) {
     throw new Error("절반 이상 실패 — 비정상 상태라 저장하지 않습니다.");
   }
-  return { summaries, outlines };
+  return { summaries, outlines, dividends };
 }
 
 function writeFinancials(data: {
   summaries: (string | number)[][];
   outlines: (string | number)[][];
+  dividends: (string | number)[][];
 }): void {
   writeSeedFile(
     `${OUT_DIR}/financials.json`,
@@ -350,7 +393,9 @@ function writeFinancials(data: {
 "summaryFields": ${JSON.stringify(SUMMARY_FIELDS)},
 "summaries": ${stringifyRows(data.summaries)},
 "outlineFields": ${JSON.stringify(OUTLINE_FIELDS)},
-"outlines": ${stringifyRows(data.outlines)}
+"outlines": ${stringifyRows(data.outlines)},
+"dividendFields": ${JSON.stringify(DIVIDEND_FIELDS)},
+"dividends": ${stringifyRows(data.dividends)}
 }`,
   );
 }
@@ -523,7 +568,7 @@ async function main(): Promise<void> {
     writeMaster(placeholder.master);
     writeSnapshot(placeholder.snapshot);
     writeIndex(placeholder.index);
-    writeFinancials({ summaries: [], outlines: [] });
+    writeFinancials({ summaries: [], outlines: [], dividends: [] });
     console.log("완료. 실제 시드는 인증키 설정 후 `npm run seed` 로 다시 생성하세요.");
     return;
   }

@@ -31,10 +31,21 @@ export interface CorpOutline {
   hmpg: string;
 }
 
+/** 최근 1년 현금배당 요약 (보통주 기준) + 액면가 */
+export interface DividendInfo {
+  /** 최근 1년(370일) 현금배당 합계 — 주당 (원). 분기 배당은 합산됨 */
+  annualDvdn: number;
+  /** 가장 최근 배당 기준일 (YYYY-MM-DD, 없으면 빈 문자열) */
+  lastBasDt: string;
+  /** 액면가 (원) */
+  parValue: number;
+}
+
 export interface CompanyReport {
   outline: CorpOutline | null;
   /** 최근 연도부터 내림차순 */
   years: FinancialYear[];
+  dividend: DividendInfo | null;
 }
 
 type Row = (string | number)[];
@@ -45,9 +56,11 @@ function columnIndex(fields: string[]): Record<string, number> {
 
 const sCol = columnIndex(financialsJson.summaryFields);
 const oCol = columnIndex(financialsJson.outlineFields);
+const dCol = columnIndex(financialsJson.dividendFields);
 
 let summariesByCrno: Map<string, FinancialYear[]> | undefined;
 let outlineByCrno: Map<string, CorpOutline> | undefined;
+let dividendByCrno: Map<string, DividendInfo> | undefined;
 
 function buildMaps(): void {
   summariesByCrno = new Map();
@@ -83,16 +96,28 @@ function buildMaps(): void {
       },
     ]),
   );
+
+  dividendByCrno = new Map(
+    (financialsJson.dividends as Row[]).map((row) => [
+      String(row[dCol.crno]),
+      {
+        annualDvdn: Number(row[dCol.annualDvdn]),
+        lastBasDt: String(row[dCol.lastBasDt]),
+        parValue: Number(row[dCol.parValue]),
+      },
+    ]),
+  );
 }
 
-/** 종목코드의 기업 리포트. 재무·개요가 둘 다 없으면 null */
+/** 종목코드의 기업 리포트. 아무 정보도 없으면 null */
 export function getCompanyReport(code: string): CompanyReport | null {
   const crno = SEED_CRNO_BY_CODE.get(code);
   if (!crno) return null;
-  if (!summariesByCrno || !outlineByCrno) buildMaps();
+  if (!summariesByCrno || !outlineByCrno || !dividendByCrno) buildMaps();
 
   const years = summariesByCrno!.get(crno) ?? [];
   const outline = outlineByCrno!.get(crno) ?? null;
-  if (years.length === 0 && !outline) return null;
-  return { outline, years };
+  const dividend = dividendByCrno!.get(crno) ?? null;
+  if (years.length === 0 && !outline && !dividend) return null;
+  return { outline, years, dividend };
 }

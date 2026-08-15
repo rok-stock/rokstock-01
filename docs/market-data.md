@@ -116,8 +116,8 @@ npm run seed -- --placeholder     # 인증키 없이 가짜 시드 (초기 개�
 | KRX상장종목정보 | 종목 마스터(법인등록번호) | ✅ 사용 중 — 우선주는 없어서 시세와 병합 |
 | 지수시세정보 | KOSPI 지수 (벤치마크, `/api/index`) | ✅ 사용 중 |
 | 기업재무정보·기업기본정보 | 기업 리포트 — `GetFinaStatInfoService_V2`·`GetCorpBasicInfoService_V2` | ✅ 시드 수집 (연 단위) |
-| 주식배당정보 | 배당금·배당률 (G6) — `GetStocDiviInfoService/getDiviInfo` | 승인 대기 (키 미등록 확인됨) |
-| 주식발행정보 | 액면가·발행주식수·상장일 (G6) — `GetStocIssuInfoService_V2/getItemBasiInfo_V2` 등 | 승인 대기 (키 미등록 확인됨) |
+| 주식배당정보 | 배당수익률·액면가 — `1160100/GetStocDiviInfoService_V2/getDiviInfo_V2` ⚠️ 이 서비스만 `service/` 경로 없이 루트 바로 아래 | ✅ 시드 수집 (연 단위) |
+| ~~주식발행정보~~ | ~~액면가·발행주식수~~ → **불필요해짐** — 액면가는 배당 API에, 상장일은 기업개요에, 발행주식수는 시세(시총)에 이미 있음 | 사용 안 함 |
 
 > 배당·발행정보는 공공누리 제2유형(상업적 이용금지)이다. 이 프로젝트는 **비상업(개인 학습용)**
 > 이라 사용하되, 수익화를 검토하게 되면 한국예탁결제원과의 정보이용계약을 먼저 확인해야 한다.
