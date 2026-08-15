@@ -1,0 +1,116 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e3]:
+      - link "RokStock" [ref=e4] [cursor=pointer]:
+        - /url: /
+      - searchbox "종목 검색" [ref=e6]
+  - main [ref=e7]:
+    - generic [ref=e8]:
+      - generic [ref=e9]:
+        - heading "삼성전자" [level=1] [ref=e10]
+        - paragraph [ref=e11]: 005930 · KOSPI · 기준일 2026-08-13
+      - button "관심 종목 담기" [disabled] [ref=e12]
+    - generic [ref=e13]:
+      - generic [ref=e14]: 268,000
+      - generic [ref=e15]: 원
+      - generic [ref=e16]: +12,500 (+4.89%)
+    - paragraph [ref=e17]: 거래량 3,553만주
+    - generic [ref=e18]:
+      - heading "일봉 차트 (최근 60영업일)" [level=2] [ref=e19]
+      - generic [ref=e21]:
+        - generic [ref=e22]:
+          - term [ref=e23]: 일자
+          - definition [ref=e24]: 2026-08-13
+        - generic [ref=e25]:
+          - term [ref=e26]: 시가
+          - definition [ref=e27]: 267,500
+        - generic [ref=e28]:
+          - term [ref=e29]: 고가
+          - definition [ref=e30]: 271,000
+        - generic [ref=e31]:
+          - term [ref=e32]: 저가
+          - definition [ref=e33]: 262,500
+        - generic [ref=e34]:
+          - term [ref=e35]: 종가
+          - definition [ref=e36]: 268,000
+        - generic [ref=e37]:
+          - term [ref=e38]: 거래량
+          - definition [ref=e39]: 3,553만
+    - group [ref=e41]:
+      - generic "일별 시세 표로 보기" [ref=e42] [cursor=pointer]
+    - generic [ref=e43]:
+      - heading "기업 리포트" [level=2] [ref=e44]
+      - generic [ref=e45]:
+        - generic [ref=e46]:
+          - paragraph [ref=e47]:
+            - button "PER" [ref=e48]
+          - paragraph [ref=e49]: 34.7배
+          - paragraph [ref=e50]: 2025년 순이익 기준
+        - generic [ref=e51]:
+          - paragraph [ref=e52]:
+            - button "PBR" [ref=e53]
+          - paragraph [ref=e54]: 3.59배
+          - paragraph [ref=e55]: 2025년 자본총계 기준
+      - table [ref=e57]:
+        - rowgroup [ref=e58]:
+          - row [ref=e59]:
+            - columnheader "연도" [ref=e60]
+            - columnheader "매출액" [ref=e61]
+            - columnheader "영업이익" [ref=e62]
+            - columnheader "순이익" [ref=e63]
+            - columnheader "자본총계" [ref=e64]
+        - rowgroup [ref=e65]:
+          - row [ref=e66]:
+            - cell "2025" [ref=e67]
+            - cell "333.6조" [ref=e68]
+            - cell "43.6조" [ref=e69]
+            - cell "45.2조" [ref=e70]
+            - cell "436.3조" [ref=e71]
+          - row [ref=e72]:
+            - cell "2024" [ref=e73]
+            - cell "300.9조" [ref=e74]
+            - cell "32.7조" [ref=e75]
+            - cell "34.5조" [ref=e76]
+            - cell "402.2조" [ref=e77]
+          - row [ref=e78]:
+            - cell "2023" [ref=e79]
+            - cell "258.9조" [ref=e80]
+            - cell "6.6조" [ref=e81]
+            - cell "15.5조" [ref=e82]
+            - cell "363.7조" [ref=e83]
+      - generic [ref=e84]:
+        - generic [ref=e85]:
+          - term [ref=e86]: 대표이사
+          - definition [ref=e87]: 전영현, 노태문
+        - generic [ref=e88]:
+          - term [ref=e89]: 설립
+          - definition [ref=e90]: 1969.01.13
+        - generic [ref=e91]:
+          - term [ref=e92]: 종업원
+          - definition [ref=e93]: 128,881명
+        - generic [ref=e94]:
+          - term [ref=e95]: 1인 평균 급여
+          - definition [ref=e96]: 2억원
+        - generic [ref=e97]:
+          - term [ref=e98]: 감사 의견
+          - definition [ref=e99]: 적정의견
+        - generic [ref=e100]:
+          - term [ref=e101]: 홈페이지
+          - definition [ref=e102]:
+            - link "www.samsung.com/sec" [ref=e103] [cursor=pointer]:
+              - /url: https://www.samsung.com/sec
+      - paragraph [ref=e104]: "출처: 금융위원회 기업재무정보·기업기본정보 (연 단위 갱신). PER/PBR 은 참고 지표일 뿐 — 숫자가 싸 보이는 데는 이유가 있을 수 있어요."
+    - generic [ref=e106]:
+      - button "매수" [ref=e107]
+      - button "매도" [disabled] [ref=e108]
+  - contentinfo [ref=e109]:
+    - generic [ref=e110]: v0.10.0
+  - navigation "주요 메뉴" [ref=e111]:
+    - generic [ref=e112]:
+      - link "홈" [ref=e113] [cursor=pointer]:
+        - /url: /
+      - link "내역" [ref=e116] [cursor=pointer]:
+        - /url: /history
+      - link "설정" [ref=e119] [cursor=pointer]:
+        - /url: /settings
+  - alert [ref=e122]

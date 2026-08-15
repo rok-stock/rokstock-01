@@ -21,10 +21,11 @@ scripts/
   build-seed.ts         시드 데이터 생성 (npm run seed)
   lib/                  스크립트 전용 API/직렬화 헬퍼
 
-src/data/               시드 산출물 (커밋함 — raw 약 300KB)
+src/data/               시드 산출물 (커밋함)
   stock-master.json     KOSPI 종목 마스터 (+법인등록번호)
   market-snapshot.json  최근 5영업일 전 종목 시세
   index-kospi.json      KOSPI 지수 1년치
+  financials.json       기업 재무(3개년)·개요 — 연 단위 갱신, --only=financials 로 생성
 ```
 
 화면에서는 이렇게만 쓴다:
@@ -113,8 +114,8 @@ npm run seed -- --placeholder     # 인증키 없이 가짜 시드 (초기 개�
 |---|---|---|
 | 주식시세정보 | 시세 스냅샷·일봉 | ✅ 사용 중 |
 | KRX상장종목정보 | 종목 마스터(법인등록번호) | ✅ 사용 중 — 우선주는 없어서 시세와 병합 |
-| 지수시세정보 | KOSPI 지수 (G7 벤치마크) | ✅ 시드 수집 완료 |
-| 기업재무정보·기업기본정보 | 기업 리포트 (G6) | 승인 확인 필요 |
+| 지수시세정보 | KOSPI 지수 (벤치마크, `/api/index`) | ✅ 사용 중 |
+| 기업재무정보·기업기본정보 | 기업 리포트 — `GetFinaStatInfoService_V2`·`GetCorpBasicInfoService_V2` | ✅ 시드 수집 (연 단위) |
 | 주식배당정보 | 배당금·배당률 (G6) — `GetStocDiviInfoService/getDiviInfo` | 승인 대기 (키 미등록 확인됨) |
 | 주식발행정보 | 액면가·발행주식수·상장일 (G6) — `GetStocIssuInfoService_V2/getItemBasiInfo_V2` 등 | 승인 대기 (키 미등록 확인됨) |
 

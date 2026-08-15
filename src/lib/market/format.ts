@@ -34,6 +34,19 @@ export function formatVolume(volume: number): string {
   return priceFormatter.format(volume);
 }
 
+/**
+ * 재무제표처럼 아주 큰 금액(원)을 짧게 — 200조 6,535억 대신 "200.7조".
+ * 음수(적자)도 처리한다.
+ */
+export function formatKrwCompact(amount: number): string {
+  const abs = Math.abs(amount);
+  const sign = amount < 0 ? "-" : "";
+  if (abs >= 1_0000_0000_0000) return `${sign}${(abs / 1_0000_0000_0000).toFixed(1)}조`;
+  if (abs >= 1_0000_0000) return `${sign}${priceFormatter.format(Math.round(abs / 1_0000_0000))}억`;
+  if (abs >= 1_0000) return `${sign}${priceFormatter.format(Math.round(abs / 1_0000))}만`;
+  return `${sign}${priceFormatter.format(abs)}`;
+}
+
 /** 등락에 따른 텍스트 색상 클래스 (상승 빨강 / 하락 파랑 / 보합 회색) */
 export function changeColorClass(change: number): string {
   if (change > 0) return "text-red-600 dark:text-red-400";

@@ -4,14 +4,19 @@
  * 공공데이터포털에서 KOSPI 종목 마스터·최근 시세·KOSPI 지수를 받아
  * `src/data/*.json` 으로 저장한다. 실행:
  *
- *   npm run seed                      # 전체 생성 (.env.local 의 DATA_GO_KR_SERVICE_KEY 필요)
- *   npm run seed -- --only=snapshot   # 일부만 재생성 (master | snapshot | index)
+ *   npm run seed                      # 기본 생성 (.env.local 의 DATA_GO_KR_SERVICE_KEY 필요)
+ *   npm run seed -- --only=snapshot   # 일부만 재생성 (master | snapshot | index | financials)
  *   npm run seed -- --days=5          # 시세 스냅샷 영업일 수 (기본 5)
  *   npm run seed -- --placeholder     # 인증키 없이 개발용 가짜 시드 생성
+ *
+ * financials(기업 재무·개요)는 종목당 API 2회 × 약 830법인 ≈ 10분쯤 걸리므로
+ * 기본 실행에서 빠져 있다 — `--only=financials` 로 명시 실행한다 (연 단위 데이터라
+ * 자주 돌릴 필요도 없다).
  *
  * 결과물은 저장소에 커밋한다 — 배포/프리뷰가 API 키·API 장애와 무관하게 뜨게 하는 안전망이다.
  */
 
+import { readFileSync } from "node:fs";
 import {
   callApi,
   DataGoKrAuthError,
@@ -19,6 +24,7 @@ import {
   normalizeCode,
   recentWeekdaysYmd,
   requireServiceKey,
+  sleep,
   toNumber,
   ymdToIso,
 } from "./lib/datagokr.ts";
@@ -220,6 +226,135 @@ async function buildIndex(): Promise<(string | number)[][]> {
   return rows;
 }
 
+// ---- 기업 재무·개요 (financials) ----
+
+interface RawSummFinaStat {
+  bizYear: string;
+  fnclDcd: string; // 110 연결 / 120 별도
+  enpSaleAmt: string;
+  enpBzopPft: string;
+  enpCrtmNpf: string;
+  enpTastAmt: string;
+  enpTdbtAmt: string;
+  enpTcptAmt: string;
+}
+
+interface RawCorpOutline {
+  crno: string;
+  enpRprFnm: string;
+  enpEstbDt: string;
+  enpXchgLstgDt: string;
+  enpEmpeCnt: string;
+  enpPn1AvgSlryAmt: string;
+  audtRptOpnnCtt: string;
+  enpHmpgUrl: string;
+}
+
+const SUMMARY_FIELDS = ["crno", "bizYear", "sale", "bzopPft", "crtmNpf", "tast", "tdbt", "tcpt"];
+const OUTLINE_FIELDS = ["crno", "ceo", "estbDt", "lstgDt", "empeCnt", "avgSlry", "auditOpnn", "hmpg"];
+
+/** 보관할 최근 사업연도 수 */
+const FINANCIAL_YEARS = 3;
+
+async function buildFinancials(): Promise<{
+  summaries: (string | number)[][];
+  outlines: (string | number)[][];
+}> {
+  console.log("[financials] 기업 재무·개요 수집 (마스터의 법인등록번호 기준)");
+  const master = JSON.parse(readFileSync(`${OUT_DIR}/stock-master.json`, "utf8")) as {
+    fields: string[];
+    rows: (string | number)[][];
+  };
+  const crnoIdx = master.fields.indexOf("crno");
+  const crnos = [...new Set(master.rows.map((row) => String(row[crnoIdx])).filter(Boolean))];
+  console.log(`  대상 법인 ${crnos.length}곳 × API 2회 — 10분쯤 걸립니다.`);
+
+  const summaries: (string | number)[][] = [];
+  const outlines: (string | number)[][] = [];
+  let failed = 0;
+
+  for (let i = 0; i < crnos.length; i += 1) {
+    const crno = crnos[i];
+    try {
+      // 요약재무제표 — 전 연도가 오므로 연결(110) 우선으로 연도별 하나씩 추려 최근 3개년만
+      const fina = await callApi<RawSummFinaStat>(
+        "GetFinaStatInfoService_V2/getSummFinaStat_V2",
+        { crno, numOfRows: "200", pageNo: "1" },
+        1,
+      );
+      const byYear = new Map<string, RawSummFinaStat>();
+      for (const item of fina.items) {
+        const existing = byYear.get(item.bizYear);
+        if (!existing || (existing.fnclDcd !== "110" && item.fnclDcd === "110")) {
+          byYear.set(item.bizYear, item);
+        }
+      }
+      const years = [...byYear.keys()].sort().slice(-FINANCIAL_YEARS);
+      for (const year of years) {
+        const item = byYear.get(year)!;
+        summaries.push([
+          crno,
+          year,
+          toNumber(item.enpSaleAmt),
+          toNumber(item.enpBzopPft),
+          toNumber(item.enpCrtmNpf),
+          toNumber(item.enpTastAmt),
+          toNumber(item.enpTdbtAmt),
+          toNumber(item.enpTcptAmt),
+        ]);
+      }
+
+      const outline = await callApi<RawCorpOutline>(
+        "GetCorpBasicInfoService_V2/getCorpOutline_V2",
+        { crno, numOfRows: "1", pageNo: "1" },
+        1,
+      );
+      const info = outline.items[0];
+      if (info) {
+        outlines.push([
+          crno,
+          info.enpRprFnm?.trim() ?? "",
+          info.enpEstbDt?.trim() ?? "",
+          info.enpXchgLstgDt?.trim() ?? "",
+          toNumber(info.enpEmpeCnt),
+          toNumber(info.enpPn1AvgSlryAmt),
+          info.audtRptOpnnCtt?.trim() ?? "",
+          info.enpHmpgUrl?.trim() ?? "",
+        ]);
+      }
+    } catch (error) {
+      failed += 1;
+      if (failed <= 5) console.warn(`  ⚠ ${crno}: ${String(error).slice(0, 100)}`);
+    }
+    if ((i + 1) % 100 === 0) console.log(`  진행 ${i + 1}/${crnos.length} (실패 ${failed})`);
+    await sleep(120);
+  }
+
+  console.log(
+    `  완료: 재무 ${summaries.length}행, 개요 ${outlines.length}곳, 실패 ${failed}곳`,
+  );
+  if (outlines.length < crnos.length * 0.5) {
+    throw new Error("절반 이상 실패 — 비정상 상태라 저장하지 않습니다.");
+  }
+  return { summaries, outlines };
+}
+
+function writeFinancials(data: {
+  summaries: (string | number)[][];
+  outlines: (string | number)[][];
+}): void {
+  writeSeedFile(
+    `${OUT_DIR}/financials.json`,
+    `{
+"version": ${SEED_VERSION},
+"summaryFields": ${JSON.stringify(SUMMARY_FIELDS)},
+"summaries": ${stringifyRows(data.summaries)},
+"outlineFields": ${JSON.stringify(OUTLINE_FIELDS)},
+"outlines": ${stringifyRows(data.outlines)}
+}`,
+  );
+}
+
 // ---- 플레이스홀더 (인증키 없이 개발용) ----
 
 /** 실제 시드가 나오기 전까지 빌드를 깨지 않기 위한 소수 종목 가짜 데이터 */
@@ -379,7 +514,8 @@ async function main(): Promise<void> {
   const args = process.argv.slice(2);
   const days = Number(args.find((a) => a.startsWith("--days="))?.slice(7) ?? 5);
   const only = args.find((a) => a.startsWith("--only="))?.slice(7)?.split(",");
-  const run = (step: string) => !only || only.includes(step);
+  // financials 는 오래 걸려서(약 10분) 명시했을 때만 돈다
+  const run = (step: string) => (only ? only.includes(step) : step !== "financials");
 
   if (args.includes("--placeholder")) {
     console.log("플레이스홀더 시드 생성 (인증키 불필요, 실제 데이터 아님)");
@@ -387,6 +523,7 @@ async function main(): Promise<void> {
     writeMaster(placeholder.master);
     writeSnapshot(placeholder.snapshot);
     writeIndex(placeholder.index);
+    writeFinancials({ summaries: [], outlines: [] });
     console.log("완료. 실제 시드는 인증키 설정 후 `npm run seed` 로 다시 생성하세요.");
     return;
   }
@@ -399,6 +536,7 @@ async function main(): Promise<void> {
     if (run("master")) writeMaster(await buildMaster(snapshot));
   }
   if (run("index")) writeIndex(await buildIndex());
+  if (run("financials")) writeFinancials(await buildFinancials());
   console.log("완료. src/data/ 산출물을 확인하고 커밋하세요.");
 }
 
