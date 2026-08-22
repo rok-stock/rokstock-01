@@ -159,9 +159,17 @@ export default function PortfolioPanel() {
               <>지수가 {formatPrice(-benchmarkGap)}원 앞서 있어요 — 시장을 이기긴 어렵죠 💪</>
             )}
           </p>
-          <p className="mt-2 text-xs tabular-nums text-zinc-400">
-            {benchmark.baseline.date} 지수 {benchmark.baseline.close.toLocaleString("ko-KR")} →{" "}
-            {benchmark.latest.date} {benchmark.latest.close.toLocaleString("ko-KR")}
+          <p className="mt-2 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 text-xs tabular-nums text-zinc-400">
+            <span>
+              {benchmark.baseline.date} 지수 {benchmark.baseline.close.toLocaleString("ko-KR")} →{" "}
+              {benchmark.latest.date} {benchmark.latest.close.toLocaleString("ko-KR")}
+            </span>
+            <Link
+              href="/market/index"
+              className="hover:text-zinc-700 hover:underline dark:hover:text-zinc-300"
+            >
+              지수 자세히 보기 →
+            </Link>
           </p>
         </div>
       )}
