@@ -271,6 +271,26 @@ G4에서 만든 "다음 거래일 종가 체결"(미체결 주문 → 익일 정
 
 ---
 
+## G12. 사용자 행동 분석 (GA4 + GTM) ✅
+
+Google 애널리틱스 4 와 태그 관리자를 붙여 사용자 행동을 측정한다.
+
+- [x] GA4 속성 생성 (계정 `rokstock` > 속성 `rokstock-01`, 측정 ID `G-72NP373Q8J`,
+      향상된 측정 ON — SPA 라우팅 page_view 자동)
+- [x] GTM 컨테이너 생성·게시 (`GTM-5D6J39X9`) — Google 태그(페이지뷰) +
+      GA4 이벤트 태그(맞춤 이벤트 trade/achievement/share, dataLayer 변수 7개 매핑)
+- [x] 코드: `@next/third-parties` `<GoogleTagManager>` (env `NEXT_PUBLIC_GTM_ID` 조건부,
+      Vercel Production 전용), `lib/analytics.ts` 이벤트 헬퍼(미사용 파라미터 null 리셋),
+      TradePanel/AchievementModal/ShareButton 계측
+- [x] 종단 검증: dataLayer push(gtm.uniqueEventId 부여) → GA4 실시간 수신 확인
+
+**학습 목표**
+- 웹개발: GA4 vs GTM 역할 분리, dataLayer 계약, "GTM은 커스텀 이벤트를 자동으로 GA4에
+  안 보낸다" 함정 → [learning/web-analytics-ga4-gtm.md](./learning/web-analytics-ga4-gtm.md)
+- 주식: (없음 — 인프라 단계)
+
+---
+
 ## 장기 아이디어 (구 M2~M6)
 
 게임이 완성된 뒤에 검토할 원래 로드맵의 아이디어들. 게임의 데이터 파이프라인과 도메인 로직
