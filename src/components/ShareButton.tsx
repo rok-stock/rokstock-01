@@ -1,5 +1,6 @@
 "use client";
 
+import { trackShare } from "@/lib/analytics";
 import { useEffect, useRef, useState } from "react";
 
 /**
@@ -24,6 +25,7 @@ export default function ShareButton() {
     if (navigator.share) {
       try {
         await navigator.share({ title: SHARE_TITLE, text: SHARE_TEXT, url });
+        trackShare("web_share");
       } catch {
         // 사용자가 공유 시트를 닫은 경우(AbortError) — 조용히 무시
       }
@@ -32,6 +34,7 @@ export default function ShareButton() {
 
     try {
       await navigator.clipboard.writeText(`${SHARE_TEXT}\n${url}`);
+      trackShare("clipboard");
       setCopied(true);
       if (timerRef.current) clearTimeout(timerRef.current);
       timerRef.current = setTimeout(() => setCopied(false), 2500);

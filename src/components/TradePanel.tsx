@@ -4,6 +4,7 @@ import AchievementModal from "@/components/AchievementModal";
 import ConceptTip from "@/components/ConceptTip";
 import { useGame } from "@/hooks/useGame";
 import { useEscapeClose } from "@/hooks/useEscapeClose";
+import { trackTrade } from "@/lib/analytics";
 import type { AchievementDef } from "@/lib/game/achievements";
 import { COMMISSION_RATE, commissionOf, sellTaxOf } from "@/lib/game/rules";
 import { formatPrice } from "@/lib/market/format";
@@ -83,6 +84,13 @@ export default function TradePanel({ code, name, price, date }: TradePanelProps)
     if (result.ok) {
       close();
       const { trade } = result;
+      trackTrade({
+        side: trade.side,
+        code: trade.code,
+        name: trade.name,
+        quantity: trade.quantity,
+        value: trade.quantity * trade.price,
+      });
       showToast(
         trade.side === "buy"
           ? `✅ ${trade.quantity}주 매수 체결! ${formatPrice(trade.price)}원 × ${trade.quantity}주 (수수료 ${formatPrice(trade.fee)}원)`

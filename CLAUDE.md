@@ -36,3 +36,8 @@
 - PR 작업 흐름: 작업 단위 브랜치 → 조기 PR(Vercel preview 로 함께 리뷰) → 머지 → GitHub 릴리즈.
   스택 PR 은 **자식을 먼저 main 으로 재타겟한 뒤** 부모를 머지할 것 (base 삭제 시 자식이 닫힘)
 - 프로덕션 브랜치는 main (2026-08-15 에 교정함 — Vercel 설정 임의 변경 금지)
+- **분석(GA4+GTM)**: GA 계정 `rokstock` > 속성 `rokstock-01`(`G-72NP373Q8J`), GTM 컨테이너
+  `GTM-5D6J39X9`. 스니펫은 `NEXT_PUBLIC_GTM_ID`(Vercel Production 전용)로 켜짐 —
+  로컬/프리뷰는 미설정이 정상(통계 오염 방지). 이벤트 이름·파라미터는 `src/lib/analytics.ts`
+  와 GTM 컨테이너의 계약 — 한쪽만 바꾸면 조용히 유실됨
+  (docs/learning/web-analytics-ga4-gtm.md)

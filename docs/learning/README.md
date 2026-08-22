@@ -27,6 +27,7 @@
 | [web-aria-combobox.md](./web-aria-combobox.md) | ARIA 콤보박스 패턴, aria-activedescendant 가상 포커스 | G8 |
 | [web-share-og-pwa.md](./web-share-og-pwa.md) | Web Share API·클립보드 폴백, OG 이미지(한글 서브셋), PWA maskable 아이콘 | G9 |
 | [web-vercel-cron.md](./web-vercel-cron.md) | Vercel Cron 의 동작 원리(스케줄러→HTTP GET), UTC 스케줄, CRON_SECRET 인증, 이중 안전망 | G1 |
+| [web-analytics-ga4-gtm.md](./web-analytics-ga4-gtm.md) | GA4 vs GTM, dataLayer 커스텀 이벤트, "GTM은 자동으로 GA4에 안 보낸다" 함정 | G12 |
 
 ### 주식
 

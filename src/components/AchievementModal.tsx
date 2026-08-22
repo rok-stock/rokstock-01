@@ -1,8 +1,9 @@
 "use client";
 
+import { trackAchievement } from "@/lib/analytics";
 import { useEscapeClose } from "@/hooks/useEscapeClose";
 import type { AchievementDef } from "@/lib/game/achievements";
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { createPortal } from "react-dom";
 
 /**
@@ -11,6 +12,7 @@ import { createPortal } from "react-dom";
  * 두 곳에서 쓴다: `TradePanel`(매수/매도 직후 즉석 달성)과 `AchievementChecker`
  * (앱 로드 시 시간 경과형 업적 점검). 포털로 body 에 렌더 — sticky 사이드바 등
  * 스태킹 컨텍스트에 갇히지 않도록 한다(TradePanel 의 주문 시트와 같은 이유).
+ * 업적 이벤트 계측도 여기서 하면 두 진입 경로가 모두 잡힌다.
  */
 export default function AchievementModal({
   achievements,
@@ -21,6 +23,10 @@ export default function AchievementModal({
 }) {
   const close = useCallback(() => onClose(), [onClose]);
   useEscapeClose(achievements.length > 0, close);
+
+  useEffect(() => {
+    for (const achievement of achievements) trackAchievement(achievement.id);
+  }, [achievements]);
 
   if (achievements.length === 0) return null;
 
