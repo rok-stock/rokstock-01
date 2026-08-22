@@ -8,7 +8,7 @@ import { useEffect, useRef, useState } from "react";
  */
 
 const SHARE_TITLE = "하루 늦은 모의주식";
-const SHARE_TEXT = "어제 종가로 사고, 내일 종가에 체결! 1억으로 시작하는 모의투자 게임 🐢";
+const SHARE_TEXT = "하루 늦은 시세로, 보이면 바로 체결! 1억으로 시작하는 모의투자 게임 🐢";
 
 export default function ShareButton() {
   const [copied, setCopied] = useState(false);

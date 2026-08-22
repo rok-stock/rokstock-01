@@ -71,5 +71,5 @@ v4 는 설정 파일 대신 CSS 에서 커스텀 유틸리티를 정의한다. `
 - `src/app/globals.css` — `container-page`, focus-visible, (부채 수정) Geist 폰트 복원
 - `src/components/HeaderNav.tsx` + `TabBar.tsx`(`lg:hidden`, TABS 공유) — 내비 전환
 - `src/app/stocks/[code]/page.tsx` — 2컬럼 grid + order + sticky 사이드바
-- `TradePanel/GameSettlement/ConceptTip` — 바텀시트→중앙 모달 공통 레시피
+- `TradePanel/AchievementModal/ConceptTip` — 바텀시트→중앙 모달 공통 레시피
 - `src/hooks/useEscapeClose.ts` — 모달 Esc 닫기

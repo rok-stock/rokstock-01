@@ -20,7 +20,6 @@ export default function PositionCard({ code, price }: { code: string; price: num
   const value = price * position.quantity;
   const pnl = value - position.totalCost;
   const pnlRate = position.totalCost === 0 ? 0 : (pnl / position.totalCost) * 100;
-  const sellable = position.quantity - position.lockedQuantity;
 
   return (
     <div className="mt-6 rounded-2xl border border-zinc-200 p-4 dark:border-zinc-800">
@@ -34,12 +33,7 @@ export default function PositionCard({ code, price }: { code: string; price: num
       <dl className="mt-2 grid grid-cols-3 gap-2 text-sm">
         <div>
           <dt className="text-xs text-zinc-400">보유 수량</dt>
-          <dd className="mt-0.5 tabular-nums">
-            {position.quantity}주
-            {position.lockedQuantity > 0 && (
-              <span className="text-xs text-zinc-400"> (가능 {sellable})</span>
-            )}
-          </dd>
+          <dd className="mt-0.5 tabular-nums">{position.quantity}주</dd>
         </div>
         <div>
           <dt className="text-xs text-zinc-400">

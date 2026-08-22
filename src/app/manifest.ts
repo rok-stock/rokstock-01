@@ -9,7 +9,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "하루 늦은 모의주식",
     short_name: "하루주식",
-    description: "어제 종가로 사고, 내일 종가에 체결되는 모의투자 게임",
+    description: "하루 늦게 갱신되는 종가로, 보이는 즉시 사고파는 모의투자 게임",
     start_url: "/",
     display: "standalone",
     background_color: "#ffffff",

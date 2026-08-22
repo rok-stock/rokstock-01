@@ -13,8 +13,8 @@ export const contentType = "image/png";
 export const alt = "하루 늦은 모의주식 — 1억으로 시작하는 모의투자 게임";
 
 const TITLE = "하루 늦은 모의주식";
-const SUBTITLE = "어제 종가로 고르고, 내일 종가에 체결";
-const TAGS = ["1억으로 시작", "매일 결과 개봉", "KOSPI 실제 시세"];
+const SUBTITLE = "하루 늦은 시세, 보이면 바로 체결";
+const TAGS = ["1억으로 시작", "즉시 체결", "KOSPI 실제 시세"];
 
 /** 구글 폰트에서 한글 서브셋(TTF) 받기 — 실패하면 null (라틴 폴백 렌더) */
 async function loadNotoSansKr(text: string): Promise<ArrayBuffer | null> {

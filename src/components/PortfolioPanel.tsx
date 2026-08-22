@@ -10,7 +10,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
 /**
- * 홈 포트폴리오 패널 — 총자산 카드 + 미체결 배너 + 보유 종목 리스트.
+ * 홈 포트폴리오 패널 — 총자산 카드 + 보유 종목 리스트.
  *
  * 보유 종목 시세는 `/api/quotes` 로 가져온다 (서버의 스냅샷 캐시를 타므로 저렴).
  * 평가 계산은 `evaluatePortfolio` 순수 함수에 위임하고 여기는 표시만 한다.
@@ -133,12 +133,6 @@ export default function PortfolioPanel() {
             <dt className="text-zinc-500">주문 가능 현금</dt>
             <dd className="tabular-nums">{formatPrice(valuation.cash)}원</dd>
           </div>
-          {valuation.lockedCash > 0 && (
-            <div className="flex justify-between">
-              <dt className="text-zinc-500">주문에 묶인 금액</dt>
-              <dd className="tabular-nums">{formatPrice(valuation.lockedCash)}원</dd>
-            </div>
-          )}
           {valuation.stockValue > 0 && (
             <div className="flex justify-between">
               <dt className="text-zinc-500">주식 평가금액</dt>
@@ -170,22 +164,6 @@ export default function PortfolioPanel() {
             {benchmark.latest.date} {benchmark.latest.close.toLocaleString("ko-KR")}
           </p>
         </div>
-      )}
-
-      {/* 미체결 배너 */}
-      {state.pendingOrders.length > 0 && (
-        <Link
-          href="/history"
-          className="flex items-center justify-between rounded-xl border border-zinc-200 px-4 py-3 text-sm hover:bg-zinc-50 dark:border-zinc-800 dark:hover:bg-zinc-900"
-        >
-          <span>
-            ⏳ 미체결 주문 <strong>{state.pendingOrders.length}건</strong> — 다음 거래일 종가로
-            체결됩니다
-          </span>
-          <span aria-hidden className="text-zinc-400">
-            →
-          </span>
-        </Link>
       )}
 
       {/* 보유 종목 */}

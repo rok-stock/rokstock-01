@@ -224,6 +224,27 @@ localStorage 기반 게임 상태와 앱 골격(하단 탭)을 만든다.
 
 ---
 
+## G10. 즉시 체결로 전환 ✅
+
+G4에서 만든 "다음 거래일 종가 체결"(미체결 주문 → 익일 정산 → 체결 개봉 연출)을 되돌리고,
+**조회 시점 최신 종가로 그 자리에서 즉시 체결**되도록 게임 규칙을 바꿨다.
+
+- [x] `lib/game/engine.ts` — `placeBuy`/`placeSell`/`cancelOrder`/`settleOrders`/
+      `expectedExecDate` 제거, `buyNow`/`sellNow` 로 교체(그 자리에서 `Trade` 반환)
+- [x] 상태 스키마 v2 → v3 — `pendingOrders`/`lockedCash`/`Position.lockedQuantity` 제거,
+      마이그레이션에서 남은 미체결 주문은 취소 처리(잠긴 현금 반환)
+- [x] `GameSettlement`(정산 트리거 + 개봉 시트) 제거 → `AchievementChecker`(시간 경과형
+      업적만 점검) + `TradePanel`이 매수/매도 직후 체결 결과를 토스트로 즉시 표시
+- [x] `/api/candles` Route Handler 제거(정산 전용이라 더 쓰이지 않음)
+- [x] 홈/내역/온보딩/설정 문구를 "다음 거래일 체결" → "즉시 체결"에 맞게 갱신
+
+**학습 목표**
+- 웹개발: 스키마 마이그레이션으로 필드 제거(추가만이 아니라 축소도 다뤄야 함)
+- 주식: 룩어헤드 편향을 원천 차단하는 설계와, 그걸 의식적으로 완화하는 트레이드오프의 차이
+  → [learning/stock-order-execution.md](./learning/stock-order-execution.md)
+
+---
+
 ## 장기 아이디어 (구 M2~M6)
 
 게임이 완성된 뒤에 검토할 원래 로드맵의 아이디어들. 게임의 데이터 파이프라인과 도메인 로직

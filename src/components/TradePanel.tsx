@@ -1,9 +1,10 @@
 "use client";
 
+import AchievementModal from "@/components/AchievementModal";
 import ConceptTip from "@/components/ConceptTip";
 import { useGame } from "@/hooks/useGame";
 import { useEscapeClose } from "@/hooks/useEscapeClose";
-import { expectedExecDate } from "@/lib/game/engine";
+import type { AchievementDef } from "@/lib/game/achievements";
 import { COMMISSION_RATE, commissionOf, sellTaxOf } from "@/lib/game/rules";
 import { formatPrice } from "@/lib/market/format";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -12,15 +13,16 @@ import { createPortal } from "react-dom";
 /**
  * 종목 상세 하단의 매수/매도 바 + 주문 바텀시트.
  *
- * 체결가가 주문 시점에 확정되지 않는 "다음 종가 체결" 규칙이라
- * 매수는 **금액**을, 매도는 **수량**을 지정한다 (docs/game-design.md 2절).
- * 바텀시트는 라이브러리 없이 fixed 오버레이로 만든다 — 모바일 웹 UX 학습 겸.
+ * 조회 시점의 최신 종가로 **그 자리에서 즉시 체결**된다 (docs/game-design.md 2절) — 체결가가
+ * 화면에 뜬 가격 그대로라 매도는 수량을 바로 지정하고, 매수도 예산(금액) 안에서 살 수 있는
+ * 최대 수량이 즉시 확정된다. 바텀시트는 라이브러리 없이 fixed 오버레이로 만든다 —
+ * 모바일 웹 UX 학습 겸.
  */
 
 interface TradePanelProps {
   code: string;
   name: string;
-  /** 최근 영업일 종가 (예상 계산용 — 체결가가 아니다) */
+  /** 조회 시점 최신 종가 — 그대로 체결가가 된다 */
   price: number;
   /** 종가 기준일 */
   date: string;
@@ -44,6 +46,7 @@ export default function TradePanel({ code, name, price, date }: TradePanelProps)
   const [rawValue, setRawValue] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
+  const [earned, setEarned] = useState<AchievementDef[]>([]);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => () => {
@@ -51,10 +54,9 @@ export default function TradePanel({ code, name, price, date }: TradePanelProps)
   }, []);
 
   const position = state.positions.find((p) => p.code === code);
-  const sellable = position ? position.quantity - position.lockedQuantity : 0;
+  const sellable = position?.quantity ?? 0;
 
   const value = parseInput(rawValue);
-  const execDate = expectedExecDate(new Date());
 
   const openSheet = (next: Exclude<SheetMode, null>) => {
     setMode(next);
@@ -72,7 +74,7 @@ export default function TradePanel({ code, name, price, date }: TradePanelProps)
   };
 
   const submit = () => {
-    const base = { code, name, basePrice: price, baseDate: date };
+    const base = { code, name, price, date };
     const result =
       mode === "buy"
         ? placeBuyOrder({ ...base, amount: value })
@@ -80,23 +82,31 @@ export default function TradePanel({ code, name, price, date }: TradePanelProps)
 
     if (result.ok) {
       close();
-      showToast("주문 접수! 다음 거래일 종가로 체결됩니다 🔔");
+      const { trade } = result;
+      showToast(
+        trade.side === "buy"
+          ? `✅ ${trade.quantity}주 매수 체결! ${formatPrice(trade.price)}원 × ${trade.quantity}주 (수수료 ${formatPrice(trade.fee)}원)`
+          : `✅ ${trade.quantity}주 매도 체결! 실현손익 ${
+              (trade.realizedPnl ?? 0) >= 0 ? "+" : ""
+            }${formatPrice(trade.realizedPnl ?? 0)}원`,
+      );
+      if (result.earned.length > 0) setEarned(result.earned);
       return;
     }
     setError(
       {
         invalid_amount: "주문 금액을 입력해 주세요.",
         insufficient_cash: "주문 가능 현금이 부족합니다.",
+        amount_too_small: "주문 금액이 1주 가격에도 못 미칩니다.",
         invalid_quantity: "주문 수량을 입력해 주세요.",
-        insufficient_quantity: "주문 가능 수량을 넘었습니다.",
-        unknown_order: "주문을 찾지 못했습니다.",
+        insufficient_quantity: "보유 수량을 넘었습니다.",
       }[result.reason],
     );
   };
 
-  // 매수: 예상 수량 (금액 안에서 수수료 포함 최대로 살 수 있는 주 수, 최근 종가 기준)
-  const estimatedQty = Math.floor(value / (price * (1 + COMMISSION_RATE)));
-  // 매도: 예상 정산 금액
+  // 매수: 살 수 있는 수량 (금액 안에서 수수료 포함 최대로 살 수 있는 주 수, 조회가 기준 — 이 값 그대로 체결된다)
+  const buyQty = Math.floor(value / (price * (1 + COMMISSION_RATE)));
+  // 매도: 정산 금액 (조회가 기준 — 이 값 그대로 체결된다)
   const sellGross = value * price;
   const sellFee = commissionOf(sellGross);
   const sellTax = sellTaxOf(sellGross);
@@ -126,7 +136,7 @@ export default function TradePanel({ code, name, price, date }: TradePanelProps)
         </div>
       </div>
 
-      {/* 주문 접수 토스트 — 포털: 데스크톱에서 sticky 사이드바(스태킹 컨텍스트)에 갇히지 않도록 body 로 탈출 */}
+      {/* 체결 결과 토스트 — 포털: 데스크톱에서 sticky 사이드바(스태킹 컨텍스트)에 갇히지 않도록 body 로 탈출 */}
       {toast &&
         createPortal(
           <div
@@ -137,6 +147,8 @@ export default function TradePanel({ code, name, price, date }: TradePanelProps)
           </div>,
           document.body,
         )}
+
+      <AchievementModal achievements={earned} onClose={() => setEarned([])} />
 
       {/* 주문 시트 — 모바일: 하단 바텀시트 / 데스크톱(lg): 중앙 모달.
           포털로 body 에 렌더 — sticky 사이드바의 스태킹 컨텍스트에 갇히면 차트 캔버스가 위로 비친다.
@@ -210,7 +222,7 @@ export default function TradePanel({ code, name, price, date }: TradePanelProps)
               })}
             </div>
 
-            {/* 예상 정보 */}
+            {/* 체결 정보 — 조회가 그대로 체결가라 "예상"이 아니라 확정값이다 */}
             <dl className="mt-4 space-y-1.5 rounded-xl bg-zinc-50 p-4 text-sm dark:bg-zinc-950">
               {mode === "buy" ? (
                 <>
@@ -219,8 +231,8 @@ export default function TradePanel({ code, name, price, date }: TradePanelProps)
                     <dd className="tabular-nums">{formatPrice(state.cash)}원</dd>
                   </div>
                   <div className="flex justify-between">
-                    <dt className="text-zinc-500">예상 수량 (최근 종가 기준)</dt>
-                    <dd className="tabular-nums">{estimatedQty}주</dd>
+                    <dt className="text-zinc-500">매수 수량</dt>
+                    <dd className="tabular-nums">{buyQty}주</dd>
                   </div>
                   <div className="flex justify-between">
                     <dt className="text-zinc-500">
@@ -232,7 +244,7 @@ export default function TradePanel({ code, name, price, date }: TradePanelProps)
               ) : (
                 <>
                   <div className="flex justify-between">
-                    <dt className="text-zinc-500">예상 매도 금액</dt>
+                    <dt className="text-zinc-500">매도 금액</dt>
                     <dd className="tabular-nums">{formatPrice(sellGross)}원</dd>
                   </div>
                   <div className="flex justify-between">
@@ -243,7 +255,7 @@ export default function TradePanel({ code, name, price, date }: TradePanelProps)
                   </div>
                   <div className="flex justify-between">
                     <dt className="text-zinc-500">
-                      예상 <ConceptTip id="realizedPnl">실현손익</ConceptTip>
+                      <ConceptTip id="realizedPnl">실현손익</ConceptTip>
                     </dt>
                     <dd className={`tabular-nums ${sellPnl >= 0 ? "text-red-600" : "text-blue-600"}`}>
                       {sellPnl >= 0 ? "+" : ""}
@@ -252,12 +264,6 @@ export default function TradePanel({ code, name, price, date }: TradePanelProps)
                   </div>
                 </>
               )}
-              <div className="flex justify-between border-t border-zinc-200 pt-1.5 dark:border-zinc-800">
-                <dt className="text-zinc-500">체결 예정</dt>
-                <dd className="tabular-nums">
-                  {execDate} 종가 <span className="text-zinc-400">(휴장 시 다음 거래일)</span>
-                </dd>
-              </div>
             </dl>
 
             {error && <p className="mt-3 text-sm text-red-600">{error}</p>}
@@ -271,8 +277,8 @@ export default function TradePanel({ code, name, price, date }: TradePanelProps)
               }`}
             >
               {mode === "buy"
-                ? `${withComma(value) || "0"}원 매수 주문`
-                : `${withComma(value) || "0"}주 매도 주문`}
+                ? `${withComma(value) || "0"}원 매수`
+                : `${withComma(value) || "0"}주 매도`}
             </button>
           </div>
           </div>,
