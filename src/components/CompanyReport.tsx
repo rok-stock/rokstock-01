@@ -1,6 +1,7 @@
 import ConceptTip from "@/components/ConceptTip";
 import { getCompanyReport } from "@/lib/market/financials";
 import { formatKrwCompact, formatPrice } from "@/lib/market/format";
+import { computeValuationMetrics } from "@/lib/market/metrics";
 
 /**
  * 기업 리포트 — "싸 보여서"가 아니라 "알고" 사기 위한 화면.
@@ -37,17 +38,12 @@ export default function CompanyReport({
     );
   }
 
-  const latest = report.years[0];
-  // 우선주(코드 끝자리 ≠ 0)는 시총·배당이 보통주와 달라 지표가 왜곡된다 — 보통주에서만 계산.
-  const isCommon = code.endsWith("0");
-  const cap = isCommon ? marketCap : undefined;
-  const per = cap && latest && latest.crtmNpf > 0 ? cap / latest.crtmNpf : null;
-  const pbr = cap && latest && latest.tcpt > 0 ? cap / latest.tcpt : null;
+  // 계산 규칙(우선주 제외 포함)은 metrics.ts 가 단일 소스 — 스크리너와 같은 값이 보장된다
+  const { per, pbr, dividendYield, bizYear } = computeValuationMetrics(
+    { code, price, marketCap },
+    report,
+  );
   const dividend = report.dividend;
-  const dividendYield =
-    isCommon && dividend && dividend.annualDvdn > 0 && price
-      ? (dividend.annualDvdn / price) * 100
-      : null;
   const outline = report.outline;
 
   return (
@@ -64,7 +60,7 @@ export default function CompanyReport({
             <p className="mt-1 text-xl font-semibold tabular-nums">
               {per !== null ? `${per.toFixed(1)}배` : "적자"}
             </p>
-            <p className="mt-0.5 text-xs text-zinc-400">{latest?.bizYear}년 순이익 기준</p>
+            <p className="mt-0.5 text-xs text-zinc-400">{bizYear}년 순이익 기준</p>
           </div>
           <div className="rounded-2xl border border-zinc-200 p-4 dark:border-zinc-800">
             <p className="text-xs text-zinc-400">
@@ -73,7 +69,7 @@ export default function CompanyReport({
             <p className="mt-1 text-xl font-semibold tabular-nums">
               {pbr !== null ? `${pbr.toFixed(2)}배` : "—"}
             </p>
-            <p className="mt-0.5 text-xs text-zinc-400">{latest?.bizYear}년 자본총계 기준</p>
+            <p className="mt-0.5 text-xs text-zinc-400">{bizYear}년 자본총계 기준</p>
           </div>
           <div className="rounded-2xl border border-zinc-200 p-4 dark:border-zinc-800">
             <p className="text-xs text-zinc-400">

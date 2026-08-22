@@ -26,6 +26,18 @@ export const TABS = [
     ),
   },
   {
+    href: "/market",
+    label: "시장",
+    // 막대그래프 모양
+    icon: (
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M4 20V14M9.5 20V10M15 20V4M20.5 20V8"
+      />
+    ),
+  },
+  {
     href: "/history",
     label: "내역",
     // 목록 모양

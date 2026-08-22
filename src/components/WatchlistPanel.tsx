@@ -3,6 +3,7 @@
 import QuoteRow from "@/components/QuoteRow";
 import { useWatchlist } from "@/hooks/useWatchlist";
 import type { Quote } from "@/lib/market/types";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 /**
@@ -10,8 +11,11 @@ import { useEffect, useState } from "react";
  *
  * 관심 종목은 브라우저(localStorage)에만 있어서 서버가 미리 알 수 없다.
  * 그래서 브라우저에서 목록을 읽은 뒤 `/api/quotes` 로 시세를 물어본다.
+ *
+ * `showCompareLink` 는 홈에서만 켠다 — /watchlist 페이지 안에서 자기 자신으로
+ * 가는 링크가 보이지 않게 하기 위함.
  */
-export default function WatchlistPanel() {
+export default function WatchlistPanel({ showCompareLink }: { showCompareLink?: boolean }) {
   const { codes, ready } = useWatchlist();
   const [quotes, setQuotes] = useState<Quote[]>([]);
   const [loading, setLoading] = useState(true);
@@ -41,9 +45,17 @@ export default function WatchlistPanel() {
 
   return (
     <section className="w-full">
-      <h2 className="mb-2 px-3 text-sm font-semibold text-zinc-500 dark:text-zinc-400">
-        관심 종목
-      </h2>
+      <div className="mb-2 flex items-baseline justify-between px-3">
+        <h2 className="text-sm font-semibold text-zinc-500 dark:text-zinc-400">관심 종목</h2>
+        {showCompareLink && codes.length > 0 && (
+          <Link
+            href="/watchlist"
+            className="text-xs text-zinc-500 hover:text-zinc-800 hover:underline dark:hover:text-zinc-200"
+          >
+            수익률 비교 →
+          </Link>
+        )}
+      </div>
 
       {!ready ? (
         <p className="px-3 py-6 text-sm text-zinc-500">불러오는 중…</p>

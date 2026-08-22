@@ -34,7 +34,7 @@ export default function Home() {
 
         {/* WatchlistPanel 이 자체 "관심 종목" 제목을 갖고 있다 */}
         <div className="mt-6 rounded-2xl border border-zinc-200 p-3 lg:mt-0 dark:border-zinc-800">
-          <WatchlistPanel />
+          <WatchlistPanel showCompareLink />
         </div>
       </div>
 

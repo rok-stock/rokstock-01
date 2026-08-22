@@ -1,4 +1,4 @@
-import { seedBasePrice } from "./seed";
+import { loadSeedSnapshot, seedBasePrice } from "./seed";
 import { findStockByCode, searchStockMaster, STOCK_MASTER } from "./stock-master";
 import type { DailyCandle, MarketDataProvider, Quote } from "./types";
 
@@ -127,12 +127,21 @@ function quoteFromCandles(code: string, candles: DailyCandle[]): Quote | null {
   const previous = candles[candles.length - 2] ?? latest;
   const change = latest.close - previous.close;
 
+  // 시가총액도 결정적으로 — 시드의 (시총 ÷ 종가) = 발행주식수에 목업 가격을 곱한다.
+  // 없으면 undefined 로 두면 PER/PBR 이 "—" 처리된다 (스크리너·기업 리포트 동일).
+  const seedQuote = loadSeedSnapshot().quotes.get(code);
+  const marketCap =
+    seedQuote?.marketCap && seedQuote.price > 0
+      ? Math.round((seedQuote.marketCap / seedQuote.price) * latest.close)
+      : undefined;
+
   return {
     ...stock,
     price: latest.close,
     change,
     changeRate: previous.close === 0 ? 0 : (change / previous.close) * 100,
     volume: latest.volume,
+    marketCap,
     date: latest.date,
   };
 }
