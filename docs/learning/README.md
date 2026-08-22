@@ -26,6 +26,7 @@
 | [web-responsive-desktop.md](./web-responsive-desktop.md) | 모바일 퍼스트 반응형, v4 @utility, fixed 의 DOM 독립성, :focus-visible | G8 |
 | [web-aria-combobox.md](./web-aria-combobox.md) | ARIA 콤보박스 패턴, aria-activedescendant 가상 포커스 | G8 |
 | [web-share-og-pwa.md](./web-share-og-pwa.md) | Web Share API·클립보드 폴백, OG 이미지(한글 서브셋), PWA maskable 아이콘 | G9 |
+| [web-vercel-cron.md](./web-vercel-cron.md) | Vercel Cron 의 동작 원리(스케줄러→HTTP GET), UTC 스케줄, CRON_SECRET 인증, 이중 안전망 | G1 |
 | [web-analytics-ga4-gtm.md](./web-analytics-ga4-gtm.md) | GA4 vs GTM, dataLayer 커스텀 이벤트, "GTM은 자동으로 GA4에 안 보낸다" 함정 | G12 |
 
 ### 주식
@@ -40,3 +41,4 @@
 | [stock-benchmark-index.md](./stock-benchmark-index.md) | 지수·벤치마크, 인덱스 투자, "시장 이기기"의 어려움 | G7 |
 | [stock-financials-per-pbr.md](./stock-financials-per-pbr.md) | 요약 재무제표 읽기, PER/PBR, 가치평가의 한계 | G6 |
 | [stock-dividends.md](./stock-dividends.md) | 배당·배당수익률·배당락, 고배당 함정, 우선주 | G6 |
+| [stock-screener-basics.md](./stock-screener-basics.md) | 랭킹·스크리너 읽는 법, 추격 매수·밸류 트랩, 수익률 정규화 | G11 |
