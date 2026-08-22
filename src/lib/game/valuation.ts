@@ -24,10 +24,9 @@ export interface PositionValuation extends Position {
 }
 
 export interface PortfolioValuation {
-  /** 총자산 = 현금 + 주문에 묶인 금액 + 주식 평가금액 */
+  /** 총자산 = 현금 + 주식 평가금액 */
   totalAssets: number;
   cash: number;
-  lockedCash: number;
   /** 주식 평가금액 합계 */
   stockValue: number;
   /** 보유 종목 평가손익 합계 (미실현) */
@@ -59,13 +58,12 @@ export function evaluatePortfolio(
   });
 
   const stockValue = positions.reduce((sum, p) => sum + p.value, 0);
-  const totalAssets = state.cash + state.lockedCash + stockValue;
+  const totalAssets = state.cash + stockValue;
   const totalPnl = totalAssets - INITIAL_CASH;
 
   return {
     totalAssets,
     cash: state.cash,
-    lockedCash: state.lockedCash,
     stockValue,
     unrealizedPnl: positions.reduce((sum, p) => sum + p.pnl, 0),
     totalPnl,

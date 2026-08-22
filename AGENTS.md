@@ -12,7 +12,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 **모바일 모의투자 게임**을 만드는 프로젝트다.
 
 - 로그인 없음, 게임 상태는 브라우저 localStorage (초기화 지원)
-- 종목 범위는 KOSPI, 초기 자금 1억 원, 주문은 **다음 거래일 종가**로 체결
+- 종목 범위는 KOSPI, 초기 자금 1억 원, 매수/매도는 **조회 시점 최신 종가**로 즉시 체결
 - 게임 규칙 확정본은 `docs/game-design.md` 참조
 - 원래 목표였던 자동 매매/KIS 연동은 `docs/ROADMAP.md`의 "장기 아이디어"로 보존
 

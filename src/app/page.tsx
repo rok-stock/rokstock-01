@@ -14,7 +14,8 @@ export default function Home() {
     <main className="container-page flex-1 px-6 py-10">
       <h1 className="text-2xl font-semibold tracking-tight">하루 늦은 모의주식</h1>
       <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
-        어제 종가로 고르고, 내일 종가에 체결됩니다. 1억 원으로 시작하세요.
+        시세는 하루 늦게 갱신되지만, 보이는 순간 그 가격으로 바로 체결됩니다. 1억 원으로
+        시작하세요.
       </p>
 
       {isMock && (

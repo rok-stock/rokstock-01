@@ -1,4 +1,4 @@
-import { createInitialState, GAME_SCHEMA_VERSION, type GameState } from "./types";
+import { createInitialState, GAME_SCHEMA_VERSION, type GameState, type Trade } from "./types";
 
 /**
  * 게임 상태 스토어 — React 밖의 localStorage 저장소.
@@ -38,30 +38,69 @@ function getDefault(): GameState {
   return defaultState;
 }
 
+/** v1/v2 저장분에만 있던 필드 — 마이그레이션에서만 쓰는 느슨한 모양 */
+interface LegacyGameState {
+  schemaVersion?: number;
+  startedAt?: string;
+  cash?: number;
+  /** v1/v2: 미체결 매수 주문에 잠긴 금액 (v3 에서 제거) */
+  lockedCash?: number;
+  positions?: Array<{
+    code: string;
+    name: string;
+    quantity: number;
+    avgPrice: number;
+    totalCost: number;
+    /** v1/v2: 미체결 매도 주문에 잠긴 수량 (v3 에서 제거) */
+    lockedQuantity?: number;
+  }>;
+  /** v1/v2: 미체결 주문 목록 (v3 에서 제거 — 즉시 체결로 전환되며 개념 자체가 사라짐) */
+  pendingOrders?: unknown[];
+  trades?: Trade[];
+  realizedPnlTotal?: number;
+  achievements?: string[];
+}
+
 /**
- * 저장된 값을 GameState 로 되살린다. 아는 버전이면 현재 버전까지 단계적으로 승격하고,
- * 모르는 버전/깨진 형태면 새 게임으로 되돌린다.
+ * 저장된 값을 GameState 로 되살린다. 아는 모양이면 현재 버전(v3)까지 승격하고,
+ * 깨진 형태면 새 게임으로 되돌린다.
+ *
+ * v1/v2 → v3: 즉시 체결로 전환하며 `pendingOrders`/`lockedCash`/`lockedQuantity` 가
+ * 사라졌다. 남아있던 미체결 주문은 **취소된 것으로 간주**해 잠긴 현금을 그대로 돌려준다
+ * (잠긴 수량은 원래 `quantity`에 포함돼 있던 값이라 되돌릴 게 없다). 이미 v3인 저장분엔
+ * 이 변환이 항등(no-op)이라 매번 실행해도 안전하다.
  */
 function migrate(raw: string): GameState {
   try {
-    const parsed = JSON.parse(raw) as (Partial<GameState> & { schemaVersion?: number }) | null;
-    const hasBaseShape =
+    const parsed = JSON.parse(raw) as LegacyGameState | null;
+
+    if (
       parsed &&
       typeof parsed.cash === "number" &&
       typeof parsed.startedAt === "string" &&
       Array.isArray(parsed.positions) &&
-      Array.isArray(parsed.pendingOrders) &&
-      Array.isArray(parsed.trades);
-
-    if (hasBaseShape) {
-      // v1 → v2: 업적 필드 추가. 기존 진행(계좌·포지션·내역)은 그대로 보존된다.
-      if (parsed.schemaVersion === 1) {
-        console.info("[game] 게임 상태를 v1 → v2 로 마이그레이션합니다 (업적 추가).");
-        return { ...(parsed as GameState), schemaVersion: 2, achievements: [] };
+      Array.isArray(parsed.trades)
+    ) {
+      if (parsed.schemaVersion !== GAME_SCHEMA_VERSION) {
+        console.info(
+          "[game] 게임 상태를 즉시 체결 방식(v3)으로 마이그레이션합니다 — 미체결 주문은 취소 처리됩니다.",
+        );
       }
-      if (parsed.schemaVersion === GAME_SCHEMA_VERSION && Array.isArray(parsed.achievements)) {
-        return parsed as GameState;
-      }
+      return {
+        schemaVersion: GAME_SCHEMA_VERSION,
+        startedAt: parsed.startedAt,
+        cash: parsed.cash + (parsed.lockedCash ?? 0),
+        positions: parsed.positions.map((p) => ({
+          code: p.code,
+          name: p.name,
+          quantity: p.quantity,
+          avgPrice: p.avgPrice,
+          totalCost: p.totalCost,
+        })),
+        trades: parsed.trades,
+        realizedPnlTotal: parsed.realizedPnlTotal ?? 0,
+        achievements: parsed.achievements ?? [],
+      };
     }
   } catch {
     // fall through

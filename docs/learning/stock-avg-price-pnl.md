@@ -42,7 +42,7 @@
 
 ## 이 프로젝트에서 어디에 쓰였나
 
-- `src/lib/game/engine.ts` — `fillBuy`(평단·totalCost 갱신) / `fillSell`(실현손익 확정)
-- `src/components/GameSettlement.tsx` — 체결 개봉 시트의 실현손익 표시
+- `src/lib/game/engine.ts` — `buyNow`(평단·totalCost 갱신) / `sellNow`(실현손익 확정)
+- `src/components/TradePanel.tsx` — 매도 직후 토스트의 실현손익 표시
 - `src/app/settings/page.tsx` — 누적 실현손익
 - 평가손익 계산(현재가 기준)은 G5 홈 대시보드에서 등장한다

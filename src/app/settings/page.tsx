@@ -98,9 +98,9 @@ export default function SettingsPage() {
         <h2 className="text-sm font-semibold text-zinc-500 dark:text-zinc-400">데이터 안내</h2>
         <p className="mt-3 rounded-2xl border border-zinc-200 p-5 text-sm leading-6 text-zinc-600 dark:border-zinc-800 dark:text-zinc-300">
           시세는 공공데이터포털의 <strong>일별 데이터(T+1)</strong>로, 다음 영업일 오후 1시경
-          갱신됩니다. 화면의 가격은 항상 가장 최근 영업일의 <strong>종가</strong>이며, 주문도{" "}
-          <strong>다음 거래일 종가</strong>로 체결됩니다 — 그래서 이 게임의 이름이 &ldquo;하루
-          늦은 모의주식&rdquo;입니다.
+          갱신됩니다. 화면의 가격은 항상 가장 최근 영업일의 <strong>종가</strong>이며,
+          매수/매도는 그 화면에 뜬 가격으로 그 자리에서 즉시 체결됩니다 — 가격 정보 자체가
+          하루 늦다는 뜻에서 이 게임의 이름이 &ldquo;하루 늦은 모의주식&rdquo;입니다.
         </p>
       </section>
 
